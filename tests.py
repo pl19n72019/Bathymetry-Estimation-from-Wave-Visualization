@@ -32,13 +32,6 @@ def get_parser():
 
     return parser
 
-
-def test(args):
-    dakara_test_runner = DakaraTestRunner(args.target, args.verbose)
-    ok = dakara_test_runner.run()
-    exit(not ok)
-
-
 if __name__ == '__main__':
     args = get_parser().parse_args()
     verbosity = args.verbose + 1
