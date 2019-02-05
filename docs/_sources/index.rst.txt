@@ -35,7 +35,7 @@ bathymetry of the beach.
    :caption: Contents:
 
     Team <team.rst> 
-    Edit the Docs <edit-docs.rst>
+    Maintenance <maintenance.rst>
 
 
 
