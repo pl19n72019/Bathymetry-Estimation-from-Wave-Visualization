@@ -1,3 +1,15 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+File: gaussian_filter.py |
+Created by Benjamin on the 2019-02-05 |
+Github: https://github.com/pl19n72019/bathy-vagues
+
+Add a description.
+"""
+
+
 from scipy.ndimage import gaussian_filter
 from argparse import ArgumentParser
 

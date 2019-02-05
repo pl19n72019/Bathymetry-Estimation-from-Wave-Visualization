@@ -1,14 +1,22 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+File: tests.py |
+Created by Benjamin on the 2019-02-05 |
+Github: https://github.com/pl19n72019/bathy-vagues
+
+Add a description.
+"""
+
+
+import os
+import context
+import logging
+
 from argparse import ArgumentParser
 from unittest import TestSuite, TextTestRunner, defaultTestLoader
 from glob import glob
-
-import os
-import logging
-
-
-DIRECTORY = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                "tests")
 
 
 def get_parser():
@@ -51,13 +59,12 @@ if __name__ == '__main__':
         targets = [target]
     else:
         targets = [os.path.splitext(os.path.basename(f))[0]
-                for f in glob(os.path.join(DIRECTORY, "tests_*.py"))]
+                for f in glob("tests/tests_*.py")]
 
     for target in targets:
         target_name = "tests." + target
         test_suite.addTests(
-                defaultTestLoader.loadTestsFromName(target_name)
-                )
+                defaultTestLoader.loadTestsFromName(target_name))
 
     # Run the unit tests
     print("Running tests...")
