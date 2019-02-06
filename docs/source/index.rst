@@ -28,12 +28,13 @@ interested in this work to improve the wave dynamic representation with non
 invasive and cheap data such as satellite images. We hope, by leaning on a 
 timestack representation of the waves, to succeed to show the interest of
 machine learning as a potential and maybe good solution to predict the 
-bathymetry of the beach.
+bathymetry of the beach. :cite:`kinect`
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+    Theory and Background <background.rst>
     Team <team.rst> 
     Maintenance <maintenance.rst>
 
@@ -45,3 +46,10 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+
+
+.. bibliography:: biblio.bib
+
+
+
