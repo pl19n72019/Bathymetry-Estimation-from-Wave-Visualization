@@ -48,6 +48,8 @@ Indices and tables
 * :ref:`search`
 
 
+Bibliography
+============
 
 .. bibliography:: biblio.bib
 

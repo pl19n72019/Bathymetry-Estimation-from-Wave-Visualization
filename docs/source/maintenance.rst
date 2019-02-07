@@ -1,6 +1,17 @@
 Maintenance
 ===========
 
+Install the environment
+-----------------------
+
+This project is run with python, you can generate a virtualenv  
+.. code-block:: bash
+
+   # Create a virtualenv for the project
+   ./build_html.sh
+
+
+
 Edit the documentation
 ----------------------
 
@@ -26,3 +37,5 @@ root of the project by typing ``import context`` at the head of your file to
 have access to the ``src`` packages or the ``data`` for example. I inform you
 that the commenting of your code will be hardly judged and validated by myself 
 :p
+
+
