@@ -82,6 +82,7 @@
 <li class="toctree-l1"><a class="reference internal" href="background.html"> Theory and Background</a></li>
 <li class="toctree-l1"><a class="reference internal" href="team.html"> Team</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#"> Maintenance</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#install-the-environment">Install the environment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#edit-the-documentation">Edit the documentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#contribute-to-the-project">Contribute to the project</a></li>
 </ul>
@@ -152,6 +153,17 @@
             
   <div class="section" id="maintenance">
 <h1>Maintenance<a class="headerlink" href="#maintenance" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="install-the-environment">
+<h2>Install the environment<a class="headerlink" href="#install-the-environment" title="Permalink to this headline">¶</a></h2>
+<p>This project is run with python, the best way to run our code is to generate a
+virtualenv and install the dependency as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a virtualenv for the project</span>
+virtualenv bathy_env
+<span class="nb">source</span> bathy_env/bin/activate
+pip -r requirements.txt
+</pre></div>
+</div>
+</div>
 <div class="section" id="edit-the-documentation">
 <h2>Edit the documentation<a class="headerlink" href="#edit-the-documentation" title="Permalink to this headline">¶</a></h2>
 <p>The documentation is built with sphinx. Its content is gathered in the source

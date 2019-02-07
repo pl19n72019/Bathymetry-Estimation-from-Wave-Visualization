@@ -1,6 +1,22 @@
 Maintenance
 ===========
 
+Install the environment
+-----------------------
+
+This project is run with python, the best way to run our code is to generate a 
+virtualenv and install the dependency as follows:
+
+.. code-block:: bash
+
+   # Create a virtualenv for the project
+   virtualenv bathy_env
+   source bathy_env/bin/activate
+   pip -r requirements.txt 
+
+
+
+
 Edit the documentation
 ----------------------
 
@@ -26,3 +42,5 @@ root of the project by typing ``import context`` at the head of your file to
 have access to the ``src`` packages or the ``data`` for example. I inform you
 that the commenting of your code will be hardly judged and validated by myself 
 :p
+
+

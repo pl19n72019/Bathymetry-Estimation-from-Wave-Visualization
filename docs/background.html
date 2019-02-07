@@ -157,7 +157,7 @@
 <h2>Physics of the wave<a class="headerlink" href="#physics-of-the-wave" title="Permalink to this headline">¶</a></h2>
 <p>Bathymetry estimation is not a new problem. Actually, there are already few
 solutions to approximate the sea floor. Many of them are based on what we call
-a DIA (Depth Inversion Algorithms). This article <a class="reference internal" href="index.html#dia" id="id1">[Gri98]</a> summarize few of
+a DIA (Depth Inversion Algorithms), this article <a class="reference internal" href="index.html#dia" id="id1">[Gri98]</a> summarize few of
 them. Such an algorithm is based on the inversion of a dispersion relationship
 between the celerity and the depth.</p>
 <div class="math notranslate nohighlight">
@@ -169,7 +169,16 @@ the waves.</p>
 </div>
 <div class="section" id="timestack">
 <h2>Timestack<a class="headerlink" href="#timestack" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="index.html#almar" id="id3">[ABSR09]</a></p>
+<p>We first need a representation of the waves according to time. Our model is
+quite simplified, so we will consider here an infinite beach where the
+bathymetry just varies on the <span class="math notranslate nohighlight">\(x\)</span> axis. In that case, a wave can be
+described by one vector carrying the elevation according to the position
+<span class="math notranslate nohighlight">\(x\)</span> at a time <span class="math notranslate nohighlight">\(t\)</span>. Concatenating these vectors along time create an
+image called timestack. Here is an example:</p>
+<p><a class="reference internal" href="_images/timestack.png"><img alt="Timestack" src="_images/timestack.png" style="width: 45%;" /></a>  <a class="reference internal" href="_images/bathy.png"><img alt="Bathymetry" src="_images/bathy.png" style="width: 45%;" /></a></p>
+<p>The color represents the height of the water at a certain point <span class="math notranslate nohighlight">\(x\)</span>.
+These timestacks are built from real videos of litoral, the process to get
+timestack from them are described in this article <a class="reference internal" href="index.html#almar" id="id3">[ABSR09]</a>.</p>
 </div>
 </div>
 

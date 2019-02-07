@@ -4,11 +4,16 @@ Maintenance
 Install the environment
 -----------------------
 
-This project is run with python, you can generate a virtualenv  
+This project is run with python, the best way to run our code is to generate a 
+virtualenv and install the dependency as follows:
+
 .. code-block:: bash
 
    # Create a virtualenv for the project
-   ./build_html.sh
+   virtualenv bathy_env
+   source bathy_env/bin/activate
+   pip -r requirements.txt 
+
 
 
 
