@@ -1,0 +1,14 @@
+# Configuration file for autoencoder
+
+# number of time steps
+steps: 600
+# number of time steps to keep (some may be useless)
+ssteps: 400
+# number of features in a timestack
+features: 200
+# portion of the dataset to be the training set
+train_perc: 0.9
+# hyperparameters for the training
+batch_size: 2
+epochs: 1000
+s_epochs: 50

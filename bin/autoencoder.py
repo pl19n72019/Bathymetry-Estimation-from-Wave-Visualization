@@ -5,6 +5,8 @@ import numpy as np
 import glob
 import matplotlib.pyplot as plt
 import json
+import yaml
+import argparse
 
 from src.models.bathy_autoencoder_fc import AutoEncoderModel
 from math import ceil
@@ -28,20 +30,19 @@ def get_files_TS(train_perc, test_perc):
 
 
 if __name__ == "__main__":
-    # number of time steps
-    steps = 600
+    parser = argparse.ArgumentParser(description='Interface for training the autoencoder')
+    parser.add_argument('-c', '--config', default='src/configs/autoencoder.yml')
 
-    # number of features in an image
-    features = 200
+    args = parser.parse_args()
+    config = yaml.load(open(args.config))
 
-    # number of steps that we keep (some may be useless)
-    ssteps = 400
-
-    # number of epochs
-    EPOCHS = 10000
-
-    # define the portion of training set and validation/test set
-    train_perc = 0.8
+    steps = config['steps']
+    features = config['features']
+    ssteps = config['steps']
+    epochs = config['epochs']
+    s_epochs = config['s_epochs']
+    batch_size = config['batch_size']
+    train_perc = config['train_perc']
     test_perc = 1.0 - train_perc
 
     # get input files
@@ -69,14 +70,14 @@ if __name__ == "__main__":
     aem = AutoEncoderModel()
     autoencoder = aem.autoencoder
 
-    autoencoder.compile(optimizer='adadelta', loss='binary_crossentropy')
+    autoencoder.compile(optimizer='adam', loss='binary_crossentropy')
 
     # train the model
-    nb_iter = ceil(EPOCHS/50)
-    for i in range(0):
+    nb_iter = ceil(epochs/50)
+    for i in range(1):
         hist = autoencoder.fit(x_train, x_train,
-                        epochs=50,
-                        batch_size=32,
+                        epochs=s_epochs,
+                        batch_size=batch_size,
                         shuffle=True,
                         validation_data=(x_test, x_test),
                         verbose=2)
@@ -92,9 +93,9 @@ if __name__ == "__main__":
         with open(history_json, 'w') as f:
             json.dump(hist.history, f)
 
-    test_img = autoencoder.predict(x_test)
+    test_img = autoencoder.predict(np.reshape(x_test[0, ], (1, ssteps, features, 1)))
     train_img = x_test[0, ]
 
     plt.figure()
-    plt.imshow(np.reshape(test_img, (ssteps, features))
+    plt.imshow(np.reshape(test_img, (ssteps, features)))
     plt.show()
