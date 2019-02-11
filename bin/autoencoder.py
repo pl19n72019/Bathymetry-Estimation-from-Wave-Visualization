@@ -4,18 +4,17 @@ import os
 import numpy as np
 import glob
 import matplotlib.pyplot as plt
+import json
 
 from src.models.bathy_autoencoder_fc import AutoEncoderModel
 from math import ceil
 from random import shuffle
 
-DATASET_PATH = "data/dataset"
-
 
 def get_files_TS(train_perc, test_perc):
     """Get the path of the train and test files"""
     # List all the files in the dataset directory
-    file_listing = [f for f in glob.glob(os.path.join(DATASET_PATH, "*.npy"))]
+    file_listing = [f for f in glob.glob(os.path.join('data/dataset', "*.npy"))]
     shuffle(file_listing)
 
     # Compute the number of files for training
@@ -29,14 +28,14 @@ def get_files_TS(train_perc, test_perc):
 
 
 if __name__ == "__main__":
-    # number of steps
-    steps = 200
+    # number of time steps
+    steps = 600
 
-    # number of samples in an image
-    samples = 600
+    # number of features in an image
+    features = 200
 
-    # number of samples that we keep (some may be useless)
-    ssamples = 400
+    # number of steps that we keep (some may be useless)
+    ssteps = 400
 
     # number of epochs
     EPOCHS = 10000
@@ -51,20 +50,20 @@ if __name__ == "__main__":
     nb_test_files = len(test_files)
 
     # init batches
-    x_train = np.empty((nb_train_files, samples, steps))
-    x_test = np.empty((nb_test_files, samples, steps))
+    x_train = np.empty((nb_train_files, steps, features))
+    x_test = np.empty((nb_test_files, steps, features))
 
     # feed batches for training set
     for i, f in enumerate(train_files):
         x_train[i, ] = np.load(f)
-    x_train = x_train[:, (samples-ssamples):, :]
-    x_train = np.reshape(x_train, (nb_train_files*ssamples, steps, 1))
+    x_train = x_train[:, (steps-ssteps):, :]
+    x_train = np.reshape(x_train, (nb_train_files, ssteps, features, 1))
 
     # feed batches for test set
     for i, f in enumerate(test_files):
         x_test[i, ] = np.load(f)
-    x_test = x_test[:, (samples-ssamples):, :]
-    x_test = np.reshape(x_test, (nb_test_files*ssamples, steps, 1))
+    x_test = x_test[:, (steps-ssteps):, :]
+    x_test = np.reshape(x_test, (nb_test_files, ssteps, features, 1))
 
     # get the auto encoder model
     aem = AutoEncoderModel()
@@ -74,21 +73,28 @@ if __name__ == "__main__":
 
     # train the model
     nb_iter = ceil(EPOCHS/50)
-    for i in range(nb_iter):
-        autoencoder.fit(x_train, x_train,
+    for i in range(0):
+        hist = autoencoder.fit(x_train, x_train,
                         epochs=50,
                         batch_size=32,
                         shuffle=True,
                         validation_data=(x_test, x_test),
                         verbose=2)
 
+        # save weights
         autoencoder.save_weights(
                 os.path.join('data/weights/autoencoder',
                              'autoencoder_weights_' + str(i) + '.hdf5'))
+
+        # save history
+        history_json = os.path.join('data/history/autoencoder',
+                                         'autoencoder_hist_' + str(i) + '.json')
+        with open(history_json, 'w') as f:
+            json.dump(hist.history, f)
 
     test_img = autoencoder.predict(x_test)
     train_img = x_test[0, ]
 
     plt.figure()
-    plt.imshow(np.reshape(test_img[0:ssamples, ], (ssamples, steps)))
+    plt.imshow(np.reshape(test_img, (ssteps, features))
     plt.show()
