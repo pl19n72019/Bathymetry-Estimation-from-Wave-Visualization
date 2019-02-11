@@ -73,8 +73,8 @@ if __name__ == "__main__":
     autoencoder.compile(optimizer='adam', loss='binary_crossentropy')
 
     # train the model
-    nb_iter = ceil(epochs/50)
-    for i in range(1):
+    nb_iter = ceil(EPOCHS/50)
+    for i in range(nb_iter):
         hist = autoencoder.fit(x_train, x_train,
                         epochs=s_epochs,
                         batch_size=batch_size,
