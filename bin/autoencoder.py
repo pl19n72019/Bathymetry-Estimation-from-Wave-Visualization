@@ -73,7 +73,7 @@ if __name__ == "__main__":
 
     # train the model
     nb_iter = ceil(EPOCHS/50)
-    for i in range(0):
+    for i in range(nb_iter):
         hist = autoencoder.fit(x_train, x_train,
                         epochs=50,
                         batch_size=32,
@@ -92,9 +92,9 @@ if __name__ == "__main__":
         with open(history_json, 'w') as f:
             json.dump(hist.history, f)
 
-    test_img = autoencoder.predict(x_test)
+    test_img = autoencoder.predict(np.reshape(x_test[0, ], (1, 400, 200, 1)))
     train_img = x_test[0, ]
 
     plt.figure()
-    plt.imshow(np.reshape(test_img, (ssteps, features))
+    plt.imshow(np.reshape(test_img, (ssteps, features)))
     plt.show()
