@@ -14,16 +14,9 @@ class AutoEncoder:
     This class treats the encoder and the decoder parts. It allows to train
     auto-encoders (define in the package `models`), and to perform all classic
     operations on the auto-encoders.
-
-    Attributes:
-        x_train (numpy.ndarray): Input/output train set.
-        x_test (numpy.ndarray): Input/output test set.
-        width (int): Width of the train/test data.
-        height (int): Height of the train/test data.
-
     """
 
-    def __init__(self, model, dataset_path=None, load_models=None, version=0):
+    def __init__(self, model, dataset_path=None, batch_size=128, load_models=None, version=0):
         """Creation of the auto-encoder functionalities treatment object.
 
         It loads and create the dataset and the models. Only 80% of the load
@@ -31,7 +24,9 @@ class AutoEncoder:
         the model during the fitting phase. Moreover, the shape of the data
         (train and test) are fitting to run on 2-dimensional convolutional
         neural network (which offers the best results). If other network are
-        used, reshape the data at the input of the network.
+        used, reshape the data at the input of the network. A generator approach
+        is used for loading the data, which means that the data is loaded 
+        batch per batch.
 
         Note:
             This file should not be modified to be adapter to other networks.
@@ -42,6 +37,7 @@ class AutoEncoder:
                 `models`).
             dataset_path (str): Path to the dataset (default: None). If it is
                 set to None, the current path is selected.
+            batch_size (int): Size of the batch.
             load_models (str): Model to load (default: None). If it is set to
                 None, no model if load. If not, it should contain a encoder
                 name, and only its should be used (useful to pre-process the
@@ -52,27 +48,23 @@ class AutoEncoder:
                 loop.
 
         """
+        self.batch_size = batch_size
+
         if load_models is None:
-            # a new model is created, the data are load are reshaped.
-            self.x_train = []
+            # load the model (complete auto-encoder) and the encoder
+            self.__model = model
+            self.__encoder = self.__model.encoder()
+            self.__autoencoder = self.__model.autoencoder()
+
+            # creation of the generators
             files = glob.glob('{}/dataset/train_TS/*.npy'.format(
                 '.' if dataset_path is None else dataset_path))
-            for data in files:
-                self.x_train.append(np.load(data)[200:])
+            ts_train, ts_test, _, _ = train_test_split(files, files, test_size=0.2)
+            self._nb_train_samp = len(ts_train)
+            self._nb_test_samp = len(ts_test)
 
-            # reshape the data and split into two classes: train and test
-            (self.width, self.height) = self.x_train[0].shape
-            self.x_train = np.array(self.x_train)
-            self.x_train = self.x_train.reshape((len(self.x_train), self.width,
-                                                 self.height, 1))
-            self.x_train, self.x_test, _, _ = train_test_split(self.x_train,
-                                                               self.x_train,
-                                                               test_size=0.2)
-
-            # load the model (complete auto-encoder) and the encoder
-            self.__model = model((self.width, self.height, 1))
-            self.__encoder = self.__model.encoder()
-            self.__model = self.__model.autoencoder()
+            self._generator_train = GeneratorAutoencoder(ts_train, self.batch_size)
+            self._generator_test = GeneratorAutoencoder(ts_test, self.batch_size)
         else:
             self.__encoder = model
             self.load_weights(load_models, full=False, version=version)
@@ -95,10 +87,10 @@ class AutoEncoder:
                 different phases (default: 'mean_squared_error').
 
         """
-        self.__model.compile(optimizer=optimizer, loss=loss)
+        self.__autoencoder.compile(optimizer=optimizer, loss=loss)
 
-    def fit(self, epochs=50, repeat=1, batch_size=128, fname='autoencoder',
-            fname_enc='encoder', verbose=1):
+    def fit(self, epochs=50, repeat=1, fname='autoencoder', fname_enc='encoder',
+            verbose=1):
         """Trains the model for a given number of epochs (iterations on a
         dataset).
 
@@ -116,8 +108,6 @@ class AutoEncoder:
             repeat (int): Number of outer-loops (default: 1). At the end of the
                 training phase, `epochs * repeats` epochs are performed.
                 Moreover, `repeat` networks are saved on the disk.
-            batch_size (int): Number of samples per gradient update
-                (default: 128).
             fname (str): Name of the complete neural network on the disk
                 (default: 'autoencoder').
             fname_enc (str): Name of the encoder part of the neural network on
@@ -138,12 +128,12 @@ class AutoEncoder:
         # training of the model and saving of the history
         history = []
         for i in range(repeat):
-            h = self.__model.fit(self.x_train,
-                                 self.x_train,
+            h = self.__autoencoder.fit_generator(generator=self._generator_train,
+                                 steps_per_epoch=(self._nb_train_samp//self.batch_size),
                                  epochs=epochs,
-                                 batch_size=batch_size,
-                                 validation_data=(self.x_test, self.x_test),
-                                 verbose=verbose)
+                                 verbose=verbose,
+                                 validation_data=self._generator_test,
+                                 validation_steps=(self._nb_test_samp//self.batch_size))
             history.append(h.history)
             self.save_weights('{}.{}'.format(fname, i), architecture=False)
             self.save_weights('{}.{}'.format(fname_enc, i), full=False,
@@ -172,8 +162,8 @@ class AutoEncoder:
             Numpy array(s) of reshaped predictions (for displaying).
 
         """
-        return self.__model.predict(x, batch_size=batch_size) \
-            .reshape((len(x), self.width, self.height))
+        return self.__autoencoder.predict(x, batch_size=batch_size) \
+            .reshape((len(x), self.__model.shape[0], self.__model.shape[1]))
 
     def encode(self, x, batch_size=128):
         """"Generates output predictions for the input samples (outputs of the
@@ -199,6 +189,27 @@ class AutoEncoder:
         return self.__encoder.predict(x, batch_size=batch_size) \
             .reshape((len(x), width, height, 1))
 
+    def encode_dataset(self, data_in, data_out):
+        """Generate an encoded data from a timestack data.
+
+        Be aware of the fact that your data needs to have the same
+        dimension that the one required by the model. If you want this
+        encoded data to be used for the training of our CNN model, we
+        advise you to put it in a folder named 'train_encoded_TS'.
+
+        Args:
+            data_in (str): Path to the data to encode.
+            data_out (str): Path where to stock the encoded
+                data.
+        """
+        ts_names = glob.glob(data_in + '/*.npy')
+        for data in ts_names:
+            ts = np.array([np.load(data)[200:]])
+            ts_encoded = self.__encoder.predict(ts.reshape(len(ts), self.__model.shape[0], self.__model.shape[1], 1))[0,:,:,0]
+            print(data[-12:])
+            np.save(data_out + '/' + data[-12:], ts_encoded)
+
+
     def save_weights(self, fname='autoencoder', full=True, architecture=True):
         """Saves the weights of the networks.
 
@@ -222,7 +233,7 @@ class AutoEncoder:
         """
         file = './saves/weights/{}.h5'.format(fname)
         if full:
-            self.__model.save_weights(file)
+            self.__autoencoder.save_weights(file)
         else:
             self.__encoder.save_weights(file)
 
@@ -250,7 +261,7 @@ class AutoEncoder:
         file = './saves/architectures/{}.json'.format(fname)
         if full:
             with open(file, 'w') as architecture:
-                architecture.write(self.__model.to_json())
+                architecture.write(self.__autoencoder.to_json())
         else:
             with open(file, 'w') as architecture:
                 architecture.write(self.__encoder.to_json())
@@ -278,7 +289,7 @@ class AutoEncoder:
         """
         file = './saves/weights/{}.{}.h5'.format(fname, version)
         if full:
-            self.__model.load_weights(file)
+            self.__autoencoder.load_weights(file)
         else:
             self.__encoder.load_weights(file)
 

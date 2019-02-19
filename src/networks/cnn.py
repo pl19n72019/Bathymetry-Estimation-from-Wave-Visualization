@@ -9,6 +9,7 @@ from scipy.signal import savgol_filter
 from sklearn.model_selection import train_test_split
 
 from src.networks.autoencoder import AutoEncoder
+from src.networks.generator import GeneratorCNN
 
 
 class CNN:
@@ -29,8 +30,7 @@ class CNN:
 
     """
 
-    def __init__(self, model, dataset_path=None, encoder='encoder',
-                 encoder_version=0):
+    def __init__(self, model, dataset_path=None, batch_size=128):
         """Creation of the CNN functionalities treatment object.
 
         It loads and create the dataset and the models. Only 80% of the load
@@ -49,53 +49,25 @@ class CNN:
                 `models`).
             dataset_path (str): Path to the dataset (default: None). If it is
                 set to None, the current path is selected.
-            encoder (str): Name of the encoder to use (default: 'encoder'). If
-                it is set to False, to encoder is used to pre-process the data.
-            encoder_version (int): Version of encoder to load (default: 0). If
-                load_models is not None, it refers to the version of encoder to
-                load. By default, it load the first model created by the outer-
-                loop.
+            batch_size (int): Size of the batch.
         """
-        # loading of the data
-        self.x_train, self.y_train = [], []
-        ts_files = glob.glob('{}/dataset/train_TS/*.npy'.format(
-            '.' if dataset_path is None else dataset_path))
-        gt_files = glob.glob('{}/dataset/train_GT/*.npy'.format(
-            '.' if dataset_path is None else dataset_path))
-        for data_ts, data_gt in zip(ts_files, gt_files):
-            self.x_train.append(np.load(data_ts)[200:])
-            self.y_train.append(np.load(data_gt))
-
-        # reformatting of the data
-        self.x_train = np.array(self.x_train)
-        self.y_train = np.array(self.y_train)
-
-        # reshaping of the data
-        (self.width, self.height) = self.x_train[0].shape
-        self.output_size = len(self.y_train[0])
-        self.x_train = self.x_train.reshape((len(self.x_train),
-                                             self.width,
-                                             self.height,
-                                             1))
-
-        # apply the encoder to the data if applicable
-        if encoder is not None:
-            with open('./saves/architectures/{}.json'.format(encoder),
-                      'r') as architecture:
-                pp_model = model_from_json(architecture.read())
-            pre_processing = AutoEncoder(pp_model, dataset_path=dataset_path,
-                                         load_models=encoder,
-                                         version=encoder_version)
-            self.x_train = pre_processing.encode(self.x_train)
-            (self.width, self.height, _) = self.x_train[0].shape
-
-        # split the data into two classes: train and test
-        self.x_train, self.x_test, self.y_train, self.y_test = train_test_split(
-            self.x_train, self.y_train, test_size=0.2)
-
+        self.batch_size = batch_size
         # load the model
-        self.__model = model((self.width, self.height, 1),
-                             self.output_size).model()
+        self.__model = model.model()
+
+        # creation of the generator
+        ts_files = sorted(glob.glob('{}/dataset/train_encoded_TS/*.npy'.format(
+            '.' if dataset_path is None else dataset_path)))
+        gt_files = sorted(glob.glob('{}/dataset/train_GT/*.npy'.format(
+            '.' if dataset_path is None else dataset_path)))
+
+        ts_train, ts_test, b_train, b_test = train_test_split(ts_files, gt_files,
+                                                              test_size=0.2)
+
+        self._nb_train_samp = len(ts_train)
+        self._nb_test_samp = len(ts_test)
+        self._generator_train = GeneratorCNN(ts_train, b_train, self.batch_size)
+        self._generator_test = GeneratorCNN(ts_test, b_test, self.batch_size)
 
     def compile(self, optimizer='adadelta', loss='mean_squared_error'):
         """Compile the complete model.
@@ -116,7 +88,7 @@ class CNN:
         """
         self.__model.compile(optimizer=optimizer, loss=loss)
 
-    def fit(self, epochs=50, repeat=1, batch_size=128, fname='cnn', verbose=1):
+    def fit(self, epochs=50, repeat=1, fname='cnn', verbose=1):
         """Trains the model for a given number of epochs (iterations on a
         dataset).
 
@@ -133,8 +105,6 @@ class CNN:
             repeat (int): Number of outer-loops (default: 1). At the end of the
                 training phase, `epochs * repeats` epochs are performed.
                 Moreover, `repeat` networks are saved on the disk.
-            batch_size (int): Number of samples per gradient update
-                (default: 128).
             fname (str): Name of the complete neural network on the disk
                 (default: 'cnn').
             verbose (int, 0, 1, or 2): Verbosity mode (default: 1). 0 = silent,
@@ -152,12 +122,12 @@ class CNN:
         # training of the model and saving of the history
         history = []
         for i in range(repeat):
-            h = self.__model.fit(self.x_train,
-                                 self.y_train,
-                                 epochs=epochs,
-                                 batch_size=batch_size,
-                                 validation_data=(self.x_test, self.y_test),
-                                 verbose=verbose)
+            h = self.__model.fit_generator(generator=self._generator_train,
+                                           steps_per_epoch=(self._nb_train_samp//self.batch_size),
+                                           epochs=epochs,
+                                           verbose=verbose,
+                                           validation_data=self._generator_test,
+                                           validation_steps=(self._nb_test_samp//self.batch_size))
             history.append(h.history)
             self.save_weights('{}.{}'.format(fname, i), architecture=False)
 
@@ -213,7 +183,6 @@ class CNN:
                 related to the flag `full` is saved in a JSON format.
 
         """
-        print("BOOOOOOOB")
         self.__model.save_weights(
             './saves/weights/{}.h5'.format(fname))
 

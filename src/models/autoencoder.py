@@ -42,10 +42,11 @@ class Model1:
             input_shape (tuple): Input shape of the model, typically (_, _, 1).
 
         """
+        self.shape = input_shape
         self.__autoencoder = Sequential(name="AutoEncoder")
         self.__encoder = Sequential(name="Encoder")
 
-        self.__set_model(input_shape)
+        self.__set_model(self.shape)
 
     def __set_model(self, input_shape):
         """Creation of all the layers of the network.
