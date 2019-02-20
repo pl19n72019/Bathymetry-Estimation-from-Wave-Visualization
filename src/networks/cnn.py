@@ -20,13 +20,6 @@ class CNN:
     networks.
 
     Attributes:
-        x_train (numpy.ndarray): Input train set.
-        y_train (numpy.ndarray: Output train set.
-        x_test (numpy.ndarray): Input test set.
-        y_test (numpy.ndarray): Output test set.
-        width (int): Width of the train/test data.
-        height (int): Height of the train/test data.
-        output_size (int): Size of the output of the network.
 
     """
 

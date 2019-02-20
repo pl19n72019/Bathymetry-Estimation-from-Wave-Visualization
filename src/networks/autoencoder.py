@@ -2,8 +2,9 @@
 
 import glob
 import os
-
 import numpy as np
+
+from keras.models import model_from_json
 from sklearn.model_selection import train_test_split
 from src.networks.generator import GeneratorAutoencoder
 
@@ -16,7 +17,7 @@ class AutoEncoder:
     operations on the auto-encoders.
     """
 
-    def __init__(self, model, dataset_path=None, batch_size=128, load_models=None, version=0):
+    def __init__(self, model=None, dataset_path=None, batch_size=128, load_models=None, version=0):
         """Creation of the auto-encoder functionalities treatment object.
 
         It loads and create the dataset and the models. Only 80% of the load
@@ -66,7 +67,10 @@ class AutoEncoder:
             self._generator_train = GeneratorAutoencoder(ts_train, self.batch_size)
             self._generator_test = GeneratorAutoencoder(ts_test, self.batch_size)
         else:
-            self.__encoder = model
+            with open('./saves/architectures/{}.json'.format(load_models), 'r') \
+                    as architecture:
+                pp_model = model_from_json(architecture.read())
+            self.__encoder = pp_model
             self.load_weights(load_models, full=False, version=version)
 
     def compile(self, optimizer='adadelta', loss='mean_squared_error'):
@@ -162,6 +166,7 @@ class AutoEncoder:
             Numpy array(s) of reshaped predictions (for displaying).
 
         """
+
         return self.__autoencoder.predict(x, batch_size=batch_size) \
             .reshape((len(x), self.__model.shape[0], self.__model.shape[1]))
 
@@ -202,10 +207,11 @@ class AutoEncoder:
             data_out (str): Path where to stock the encoded
                 data.
         """
+        _, width, height, _ = self.__encoder.input_shape 
         ts_names = glob.glob(data_in + '/*.npy')
         for data in ts_names:
             ts = np.array([np.load(data)[200:]])
-            ts_encoded = self.__encoder.predict(ts.reshape(len(ts), self.__model.shape[0], self.__model.shape[1], 1))[0,:,:,0]
+            ts_encoded = self.__encoder.predict(ts.reshape(1, width, height, 1))[0,:,:,0]
             print(data[-12:])
             np.save(data_out + '/' + data[-12:], ts_encoded)
 
