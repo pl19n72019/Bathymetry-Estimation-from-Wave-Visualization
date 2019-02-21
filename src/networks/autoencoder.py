@@ -166,9 +166,9 @@ class AutoEncoder:
             Numpy array(s) of reshaped predictions (for displaying).
 
         """
-
-        return self.__autoencoder.predict(x, batch_size=batch_size) \
-            .reshape((len(x), self.__model.shape[0], self.__model.shape[1]))
+        _, width, height, _ = self.__encoder.output_shape
+        return self.__encoder.predict(x, batch_size=batch_size) \
+            .reshape((len(x), width, height))
 
     def encode(self, x, batch_size=128):
         """"Generates output predictions for the input samples (outputs of the
@@ -182,7 +182,9 @@ class AutoEncoder:
             Only the package `models` and the main script should be modified.
 
         Args:
-            x (numpy.ndarray like): Input data.
+            x (numpy.ndarray like): Input data. Should be an array of shape
+                (nb_images, width_im, height_im, 1). 1 stands for grayscale
+                images.
             batch_size (int): Number of samples per pass (default: 128).
 
         Returns:
@@ -203,17 +205,19 @@ class AutoEncoder:
         advise you to put it in a folder named 'train_encoded_TS'.
 
         Args:
-            data_in (str): Path to the data to encode.
-            data_out (str): Path where to stock the encoded
-                data.
+            data_in (str): Path to the data to encode (put '.' if you want 
+                to specify that the data is in the local path).
+            data_out (str): Path where to stock the encoded data 
+                (put '.' if you want to specify that the data is in
+                the local path).
         """
         _, width, height, _ = self.__encoder.input_shape 
-        ts_names = glob.glob(data_in + '/*.npy')
+        ts_names = glob.glob(data_in + '/dataset/train_TS/*.npy')
         for data in ts_names:
             ts = np.array([np.load(data)[200:]])
             ts_encoded = self.__encoder.predict(ts.reshape(1, width, height, 1))[0,:,:,0]
             print(data[-12:])
-            np.save(data_out + '/' + data[-12:], ts_encoded)
+            np.save(data_out + '/dataset/train_encoded_TS/' + data[-12:], ts_encoded)
 
 
     def save_weights(self, fname='autoencoder', full=True, architecture=True):

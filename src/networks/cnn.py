@@ -23,7 +23,7 @@ class CNN:
 
     """
 
-    def __init__(self, model, dataset_path=None, batch_size=128):
+    def __init__(self, model=None, dataset_path=None, batch_size=128, load_models=None, version=0):
         """Creation of the CNN functionalities treatment object.
 
         It loads and create the dataset and the models. Only 80% of the load
@@ -43,24 +43,41 @@ class CNN:
             dataset_path (str): Path to the dataset (default: None). If it is
                 set to None, the current path is selected.
             batch_size (int): Size of the batch.
+            load_models (str): Model to load (default: None). If it is set to
+                None, no model is loaded. If not, it should contain an encoder
+                name, and only its should be used (useful to pre-process the
+                data bedore the input of a next neural network).
+            version (int): Version of encoder to load (default: 0). If
+                load_models is not None, it refers to the version of encoder to
+                load. By default, it loads the first model created by the outer-
+                loop.
         """
         self.batch_size = batch_size
-        # load the model
-        self.__model = model.model()
 
-        # creation of the generator
-        ts_files = sorted(glob.glob('{}/dataset/train_encoded_TS/*.npy'.format(
-            '.' if dataset_path is None else dataset_path)))
-        gt_files = sorted(glob.glob('{}/dataset/train_GT/*.npy'.format(
-            '.' if dataset_path is None else dataset_path)))
+        if load_models is None:
+            # load the model
+            self.__model = model.model()
 
-        ts_train, ts_test, b_train, b_test = train_test_split(ts_files, gt_files,
-                                                              test_size=0.2)
+            # creation of the generator
+            ts_files = sorted(glob.glob('{}/dataset/train_encoded_TS/*.npy'.format(
+                '.' if dataset_path is None else dataset_path)))
+            gt_files = sorted(glob.glob('{}/dataset/train_GT/*.npy'.format(
+                '.' if dataset_path is None else dataset_path)))
 
-        self._nb_train_samp = len(ts_train)
-        self._nb_test_samp = len(ts_test)
-        self._generator_train = GeneratorCNN(ts_train, b_train, self.batch_size)
-        self._generator_test = GeneratorCNN(ts_test, b_test, self.batch_size)
+            ts_train, ts_test, b_train, b_test = train_test_split(ts_files, gt_files,
+                                                                  test_size=0.2)
+
+            self._nb_train_samp = len(ts_train)
+            self._nb_test_samp = len(ts_test)
+            self._generator_train = GeneratorCNN(ts_train, b_train, self.batch_size)
+            self._generator_test = GeneratorCNN(ts_test, b_test, self.batch_size)
+        else:
+            with open('./saves/architectures/{}.json'.format(load_models), 'r') \
+                    as architecture:
+                pp_model = model_from_json(architecture.read())
+            self.__model = pp_model
+            self.load_weights(load_models, version=version)
+
 
     def compile(self, optimizer='adadelta', loss='mean_squared_error'):
         """Compile the complete model.
@@ -148,8 +165,9 @@ class CNN:
             Numpy array(s) of reshaped predictions (for displaying).
 
         """
+        _, output_size = self.__model.output_shape
         prediction = self.__model.predict(x, batch_size=batch_size) \
-            .reshape((len(x), self.output_size))
+            .reshape((len(x), output_size))
 
         # smoothing using the Savitzky-Golay filter
         if smooth:
@@ -199,7 +217,7 @@ class CNN:
                   'w') as architecture:
             architecture.write(self.__model.to_json())
 
-    def load_weights(self, fname='cnn'):
+    def load_weights(self, fname='cnn', version=0):
         """Loads the weights of the networks.
 
         This method can be call on every instantiation.
@@ -210,10 +228,13 @@ class CNN:
 
         Args:
             fname (str): Name of the file to save (default: 'cnn').
+            version (int or str): Version of the network weights to load
+                (default: 0). It refers to the `repeat` flag in the fitting
+                method.
 
         """
         self.__model.load_weights(
-            './saves/weights/{}.h5'.format(fname))
+            './saves/weights/{}.{}.h5'.format(fname, version))
 
     def save_losses(self, history, fname='cnn'):
         """Saves the history given as input.
