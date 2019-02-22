@@ -1,0 +1,313 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>src.models.autoencoder &mdash; Bathy-Vagues  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Bathy-Vagues
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../background.html"> Theory and Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../team.html"> Team</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../maintenance.html"> Maintenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html"> API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../bibliography.html"> Bibliography</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Bathy-Vagues</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>src.models.autoencoder</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for src.models.autoencoder</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">File: autoencoder.py |</span>
+<span class="sd">Created on the 2019-02-22 |</span>
+<span class="sd">Github: https://github.com/pl19n72019</span>
+
+<span class="sd">This file contains the different models of autoencoder.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">from</span> <span class="nn">keras.layers</span> <span class="k">import</span> <span class="n">Conv2D</span><span class="p">,</span> <span class="n">MaxPooling2D</span><span class="p">,</span> <span class="n">UpSampling2D</span><span class="p">,</span> <span class="n">LeakyReLU</span>
+<span class="kn">from</span> <span class="nn">keras.models</span> <span class="k">import</span> <span class="n">Sequential</span>
+
+
+<div class="viewcode-block" id="Model1"><a class="viewcode-back" href="../../../api/src.models.autoencoder.html#src.models.autoencoder.Model1">[docs]</a><span class="k">class</span> <span class="nc">Model1</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;A first auto-encoder model.</span>
+
+<span class="sd">    The model is a convolutional model, adapted to the problem. The inputs</span>
+<span class="sd">    have originally two dimensions, the timestack size. The shape of the output</span>
+<span class="sd">    of the encoder is the reduce dimensions (compression).</span>
+
+<span class="sd">    The encoder is composed of three convolutional layers, with non-square</span>
+<span class="sd">    max-pooling after each convolutional layer. The decoder is classically</span>
+<span class="sd">    composed of three convolutional layers too, in the opposite direction.</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; autoencoder = Model1((400, 200, 1))</span>
+<span class="sd">        &gt;&gt;&gt; print(&quot;Encoder summary.&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; print(autoencoder.encoder().summary())</span>
+<span class="sd">        &gt;&gt;&gt; print(&quot;Auto-__cnn summary.&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; print(autoencoder.autoencoder().summary())</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Model1.__init__"><a class="viewcode-back" href="../../../api/src.models.autoencoder.html#src.models.autoencoder.Model1.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Creation of a first CNN model.</span>
+
+<span class="sd">        The model is a convolutional model, adapted to the problem. The inputs</span>
+<span class="sd">        have originally two dimensions, the timestack size. The shape of the</span>
+<span class="sd">        output of the encoder is the reduce dimensions (compression).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            input_shape (`tuple`): Input shape of the model, typically</span>
+<span class="sd">                (_, _, 1).</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            The model can be used as a template. The headers and the</span>
+<span class="sd">            specifications need to be fulfilled.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">input_shape</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__autoencoder</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;AutoEncoder&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__encoder</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Encoder&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__set_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Creation of all the layers of the network.</span>
+
+<span class="sd">        The encoder is composed of three convolutional layers, with non-square</span>
+<span class="sd">        max-pooling after each convolutional layer. The decoder is classically</span>
+<span class="sd">        composed of three convolutional layers too, in the opposite direction.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            input_shape (`tuple`): Input shape of the model, typically</span>
+<span class="sd">                (_, _, 1).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># encoder layers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__encoder</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+            <span class="n">Conv2D</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">,</span> <span class="n">input_shape</span><span class="o">=</span><span class="n">input_shape</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__encoder</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="mf">0.8</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__encoder</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">MaxPooling2D</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__encoder</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__encoder</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="mf">0.8</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__encoder</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">MaxPooling2D</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__encoder</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__encoder</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="mf">0.8</span><span class="p">))</span>
+
+        <span class="c1"># decoder layers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__autoencoder</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__encoder</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__autoencoder</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__autoencoder</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="mf">0.8</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__autoencoder</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">UpSampling2D</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__autoencoder</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__autoencoder</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="mf">0.8</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__autoencoder</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">UpSampling2D</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__autoencoder</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Model1.autoencoder"><a class="viewcode-back" href="../../../api/src.models.autoencoder.html#src.models.autoencoder.Model1.autoencoder">[docs]</a>    <span class="k">def</span> <span class="nf">autoencoder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Auto-encoder in the keras format.</span>
+
+<span class="sd">        After calling this method, all the keras functions that can be applied</span>
+<span class="sd">        on a model (compile, fit, ...) can be called on the output of this</span>
+<span class="sd">        method.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The complete auto-encoder in the keras format.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__autoencoder</span></div>
+
+<div class="viewcode-block" id="Model1.encoder"><a class="viewcode-back" href="../../../api/src.models.autoencoder.html#src.models.autoencoder.Model1.encoder">[docs]</a>    <span class="k">def</span> <span class="nf">encoder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Encoder in the keras format.</span>
+
+<span class="sd">        After calling this method, all the keras functions that can be applied</span>
+<span class="sd">        on a model (compile, fit, ...) can be called on the output of this</span>
+<span class="sd">        method.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The encoder section in the keras format.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__encoder</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, PL19n72019
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

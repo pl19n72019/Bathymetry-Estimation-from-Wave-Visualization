@@ -1,3 +1,15 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+File: generator.py |
+Created on the 2019-02-22 |
+Github: https://github.com/pl19n72019
+
+This file contains generator classes, they allow us to load the data batch per
+batch.
+"""
+
 import glob
 import numpy as np
 
@@ -30,7 +42,7 @@ class GeneratorAutoencoder(Sequence):
 
     def __getitem__(self, idx):
         """Uses the names of the timestack files to load `batch_size` ones.
-        This function is inherited from Sequence. 
+        This function is inherited from Sequence.
 
         Args:
             idx (int): The number of the batch to load in memory.
@@ -74,14 +86,14 @@ class GeneratorCNN(Sequence):
 
     def __getitem__(self, idx):
         """Uses the names of the timestack and bathymetry files to load
-        `batch_size` ones. This function is inherited from Sequence. 
+        `batch_size` ones. This function is inherited from Sequence.
 
         Args:
             idx (int): The number of the batch to load in memory.
 
         Returns:
             Returns a tuple composed of a timestack list and associated
-                bathymetry one. 
+                bathymetry one.
         """
         batch_ts = self.timestacks[idx * self.batch_size:(idx + 1) * self.batch_size]
         batch_b = self.bathy[idx * self.batch_size:(idx + 1) * self.batch_size]

@@ -1,6 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""
+File: autoencoder.py |
+Created on the 2019-02-22 |
+Github: https://github.com/pl19n72019
+
+This file contains the different models of autoencoder.
+"""
+
+
 from keras.layers import Conv2D, MaxPooling2D, UpSampling2D, LeakyReLU
 from keras.models import Sequential
 
@@ -16,15 +25,13 @@ class Model1:
     max-pooling after each convolutional layer. The decoder is classically
     composed of three convolutional layers too, in the opposite direction.
 
-    Examples:
-        This example can be run by executing the file `cnn.py`.
+    Example:
 
         >>> autoencoder = Model1((400, 200, 1))
         >>> print("Encoder summary.")
         >>> print(autoencoder.encoder().summary())
-        >>> print("\nAuto-__cnn summary.")
+        >>> print("Auto-__cnn summary.")
         >>> print(autoencoder.autoencoder().summary())
-
     """
 
     def __init__(self, input_shape):
@@ -34,13 +41,13 @@ class Model1:
         have originally two dimensions, the timestack size. The shape of the
         output of the encoder is the reduce dimensions (compression).
 
+        Args:
+            input_shape (`tuple`): Input shape of the model, typically
+                (_, _, 1).
+
         Note:
             The model can be used as a template. The headers and the
             specifications need to be fulfilled.
-
-        Args:
-            input_shape (tuple): Input shape of the model, typically (_, _, 1).
-
         """
         self.shape = input_shape
         self.__autoencoder = Sequential(name="AutoEncoder")
@@ -56,8 +63,8 @@ class Model1:
         composed of three convolutional layers too, in the opposite direction.
 
         Args:
-            input_shape (tuple): Input shape of the model, typically (_, _, 1).
-
+            input_shape (`tuple`): Input shape of the model, typically
+                (_, _, 1).
         """
         # encoder layers
         self.__encoder.add(
@@ -89,7 +96,6 @@ class Model1:
 
         Returns:
             The complete auto-encoder in the keras format.
-
         """
         return self.__autoencoder
 
@@ -102,15 +108,5 @@ class Model1:
 
         Returns:
             The encoder section in the keras format.
-
         """
         return self.__encoder
-
-
-if __name__ == "__main__":
-    # this model is the classic model (sizes of the generated __timestacks).
-    autoencoder = Model1((400, 200, 1))
-    print("Encoder summary.")
-    print(autoencoder.encoder().summary())
-    print("\nAuto-__cnn summary.")
-    print(autoencoder.autoencoder().summary())

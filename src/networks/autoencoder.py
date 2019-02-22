@@ -1,4 +1,15 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
+"""
+File: autoencoder.py |
+Created on the 2019-02-22 |
+Github: https://github.com/pl19n72019
+
+This file contains the network.AutoEncoder class which provides useful
+functions to init, train, load, and save autoencoder models.
+"""
+
 
 import glob
 import os
@@ -17,7 +28,8 @@ class AutoEncoder:
     operations on the auto-encoders.
     """
 
-    def __init__(self, model=None, dataset_path=None, batch_size=128, load_models=None, version=0):
+    def __init__(self, model=None, dataset_path=None, batch_size=128,
+                 load_models=None, version=0):
         """Creation of the auto-encoder functionalities treatment object.
 
         It loads and create the dataset and the models. Only 80% of the load
@@ -25,13 +37,9 @@ class AutoEncoder:
         the model during the fitting phase. Moreover, the shape of the data
         (train and test) are fitting to run on 2-dimensional convolutional
         neural network (which offers the best results). If other network are
-        used, reshape the data at the input of the network. A generator approach
-        is used for loading the data, which means that the data is loaded 
-        batch per batch.
-
-        Note:
-            This file should not be modified to be adapter to other networks.
-            Only the package `models` and the main script should be modified.
+        used, reshape the data at the input of the network. A generator
+        approach is used for loading the data, which means that the data is
+        loaded batch per batch.
 
         Args:
             model: Model of auto-encoder (should be created in the package
@@ -48,6 +56,9 @@ class AutoEncoder:
                 load. By default, it load the first model created by the outer-
                 loop.
 
+        Note:
+            This file should not be modified to be adapter to other networks.
+            Only the package `models` and the main script should be modified.
         """
         self.batch_size = batch_size
 
@@ -60,15 +71,18 @@ class AutoEncoder:
             # creation of the generators
             files = glob.glob('{}/dataset/train_TS/*.npy'.format(
                 '.' if dataset_path is None else dataset_path))
-            ts_train, ts_test, _, _ = train_test_split(files, files, test_size=0.2)
+            ts_train, ts_test, _, _ = train_test_split(files, files,
+                                                       test_size=0.2)
             self._nb_train_samp = len(ts_train)
             self._nb_test_samp = len(ts_test)
 
-            self._generator_train = GeneratorAutoencoder(ts_train, self.batch_size)
-            self._generator_test = GeneratorAutoencoder(ts_test, self.batch_size)
+            self._generator_train = GeneratorAutoencoder(ts_train,
+                                                         self.batch_size)
+            self._generator_test = GeneratorAutoencoder(ts_test,
+                                                        self.batch_size)
         else:
-            with open('./saves/architectures/{}.json'.format(load_models), 'r') \
-                    as architecture:
+            with open('./saves/architectures/{}.json'.format(load_models),
+                      'r') as architecture:
                 pp_model = model_from_json(architecture.read())
             self.__encoder = pp_model
             self.load_weights(load_models, full=False, version=version)
@@ -79,31 +93,28 @@ class AutoEncoder:
         This method should be call only on new auto-encoders (the flag
         load_models should be set to None).
 
-        Note:
-            This method should not be modified to be adapter to other networks.
-            Only the package `models` and the main script should be modified.
-
         Args:
-            optimizer (str (name of optimizer) or optimizer instance): Optimizer
-                used to train the neural network (default: 'adadelta').
+            optimizer (str (name of optimizer) or optimizer instance):
+                Optimizer used to train the neural network (default:
+                'adadelta').
             loss (str (name of objective function) ob objective function):
                 Objective function used to analyze the network during the
                 different phases (default: 'mean_squared_error').
 
+
+        Note:
+            This method should not be modified to be adapter to other networks.
+            Only the package `models` and the main script should be modified.
         """
         self.__autoencoder.compile(optimizer=optimizer, loss=loss)
 
-    def fit(self, epochs=50, repeat=1, fname='autoencoder', fname_enc='encoder',
-            verbose=1):
+    def fit(self, epochs=50, repeat=1, fname='autoencoder',
+            fname_enc='encoder', verbose=1):
         """Trains the model for a given number of epochs (iterations on a
         dataset).
 
         This method should be call only on new auto-encoders (the flag
         load_models should be set to None).
-
-        Note:
-            This method should not be modified to be adapter to other networks.
-            Only the package `models` and the main script should be modified.
 
         Args:
             epochs (int): Number of epochs to run on each outer-loop (default:
@@ -124,6 +135,9 @@ class AutoEncoder:
             epochs, as well as validation loss values and validation metrics
             values (if applicable).
 
+        Note:
+            This method should not be modified to be adapter to other networks.
+            Only the package `models` and the main script should be modified.
         """
         # saving the two architectures
         self.save_architecture(fname=fname)
@@ -132,12 +146,15 @@ class AutoEncoder:
         # training of the model and saving of the history
         history = []
         for i in range(repeat):
-            h = self.__autoencoder.fit_generator(generator=self._generator_train,
-                                 steps_per_epoch=(self._nb_train_samp//self.batch_size),
-                                 epochs=epochs,
-                                 verbose=verbose,
-                                 validation_data=self._generator_test,
-                                 validation_steps=(self._nb_test_samp//self.batch_size))
+            h = self.__autoencoder. \
+                fit_generator(generator=self._generator_train,
+                              steps_per_epoch=(self._nb_train_samp// \
+                                               self.batch_size),
+                              epochs=epochs,
+                              verbose=verbose,
+                              validation_data=self._generator_test,
+                              validation_steps=(self._nb_test_samp// \
+                                                self.batch_size))
             history.append(h.history)
             self.save_weights('{}.{}'.format(fname, i), architecture=False)
             self.save_weights('{}.{}'.format(fname_enc, i), full=False,
@@ -148,15 +165,11 @@ class AutoEncoder:
         return {k: np.array([l[k] for l in history]).flatten() for k in keys}
 
     def predict(self, x, batch_size=128):
-        """"Generates complete output predictions for the input samples (outputs
-        of the auto-encoder neural network).
+        """"Generates complete output predictions for the input samples
+        (outputs of the auto-encoder neural network).
 
         This method should be call only on new auto-encoders (the flag
         load_models should be set to None).
-
-        Note:
-            This method should not be modified to be adapter to other networks.
-            Only the package `models` and the main script should be modified.
 
         Args:
             x (numpy.ndarray like): Input data.
@@ -165,6 +178,9 @@ class AutoEncoder:
         Returns:
             Numpy array(s) of reshaped predictions (for displaying).
 
+        Note:
+            This method should not be modified to be adapter to other networks.
+            Only the package `models` and the main script should be modified.
         """
         _, width, height, _ = self.__encoder.output_shape
         return self.__encoder.predict(x, batch_size=batch_size) \
@@ -177,10 +193,6 @@ class AutoEncoder:
         This method can be call on every instantiation (the flag load_models is
         not intended to be set to None).
 
-        Note:
-            This method should not be modified to be adapter to other networks.
-            Only the package `models` and the main script should be modified.
-
         Args:
             x (numpy.ndarray like): Input data. Should be an array of shape
                 (nb_images, width_im, height_im, 1). 1 stands for grayscale
@@ -191,6 +203,9 @@ class AutoEncoder:
             Numpy array(s) of reshaped predictions (for two-dimensional
             convolutional neural network).
 
+        Note:
+            This method should not be modified to be adapter to other networks.
+            Only the package `models` and the main script should be modified.
         """
         _, width, height, _ = self.__encoder.output_shape
         return self.__encoder.predict(x, batch_size=batch_size) \
@@ -205,19 +220,21 @@ class AutoEncoder:
         advise you to put it in a folder named 'train_encoded_TS'.
 
         Args:
-            data_in (str): Path to the data to encode (put '.' if you want 
+            data_in (str): Path to the data to encode (put '.' if you want
                 to specify that the data is in the local path).
-            data_out (str): Path where to stock the encoded data 
+            data_out (str): Path where to stock the encoded data
                 (put '.' if you want to specify that the data is in
                 the local path).
         """
-        _, width, height, _ = self.__encoder.input_shape 
+        _, width, height, _ = self.__encoder.input_shape
         ts_names = glob.glob(data_in + '/dataset/train_TS/*.npy')
         for data in ts_names:
             ts = np.array([np.load(data)[200:]])
-            ts_encoded = self.__encoder.predict(ts.reshape(1, width, height, 1))[0,:,:,0]
+            ts_encoded = self.__encoder.predict(ts.reshape(1, width, height,
+                                                           1))[0,:,:,0]
             print(data[-12:])
-            np.save(data_out + '/dataset/train_encoded_TS/' + data[-12:], ts_encoded)
+            np.save(data_out + '/dataset/train_encoded_TS/' + data[-12:],
+                    ts_encoded)
 
 
     def save_weights(self, fname='autoencoder', full=True, architecture=True):
@@ -226,10 +243,6 @@ class AutoEncoder:
         This method can be call on every instantiation (the flag load_models is
         not intended to be set to None) if full is set to False. If not, this
         method should not be call.
-
-        Note:
-            This method should not be modified to be adapter to other networks.
-            Only the package `models` and the main script should be modified.
 
         Args:
             fname (str): Name of the file to save (default: 'autoencoder').
@@ -240,6 +253,9 @@ class AutoEncoder:
                 `architecture` is set to True, the architecture the the network
                 related to the flag `full` is saved in a JSON format.
 
+        Note:
+            This method should not be modified to be adapter to other networks.
+            Only the package `models` and the main script should be modified.
         """
         file = './saves/weights/{}.h5'.format(fname)
         if full:
@@ -257,16 +273,15 @@ class AutoEncoder:
         not intended to be set to None) if full is set to False. If not, this
         method should not be call.
 
-        Note:
-            This method should not be modified to be adapter to other networks.
-            Only the package `models` and the main script should be modified.
-
         Args:
             fname (str): Name of the file to save (default: 'autoencoder').
             full (bool): Network flag (default: True). If `full` is set to
                 True, the auto-encoder is saved and if not, only the encoder is
                 saved.
 
+        Note:
+            This method should not be modified to be adapter to other networks.
+            Only the package `models` and the main script should be modified.
         """
         file = './saves/architectures/{}.json'.format(fname)
         if full:
@@ -283,10 +298,6 @@ class AutoEncoder:
         not intended to be set to None) if full is set to False. If not, this
         method should not be call.
 
-        Note:
-            This method should not be modified to be adapter to other networks.
-            Only the package `models` and the main script should be modified.
-
         Args:
             fname (str): Name of the file to save (default: 'autoencoder').
             full (bool): Network flag (default: True). If `full` is set to
@@ -296,6 +307,9 @@ class AutoEncoder:
                 (default: 0). It refers to the `repeat` flag in the fitting
                 method.
 
+        Note:
+            This method should not be modified to be adapter to other networks.
+            Only the package `models` and the main script should be modified.
         """
         file = './saves/weights/{}.{}.h5'.format(fname, version)
         if full:
@@ -309,14 +323,13 @@ class AutoEncoder:
         This method can be call on every instantiation (the flag load_models is
         not intended to be set to None).
 
-        Note:
-            This method should not be modified to be adapter to other networks.
-            Only the package `models` and the main script should be modified.
-
         Args:
             history (dict): History the save on disk.
             fname (str): Name of the file to save (default: 'autoencoder').
 
+        Note:
+            This method should not be modified to be adapter to other networks.
+            Only the package `models` and the main script should be modified.
         """
         np.save('./saves/losses/{}.npy'.format(fname),
                 history)
@@ -327,13 +340,12 @@ class AutoEncoder:
         This method can be call on every instantiation (the flag load_models is
         not intended to be set to None).
 
-        Note:
-            This method should not be modified to be adapter to other networks.
-            Only the package `models` and the main script should be modified.
-
         Args:
             fname (str): Name of the file to load (default: 'autoencoder').
 
+        Note:
+            This method should not be modified to be adapter to other networks.
+            Only the package `models` and the main script should be modified.
         """
         return np.load(
             './saves/losses/{}.npy'.format(fname)).item()

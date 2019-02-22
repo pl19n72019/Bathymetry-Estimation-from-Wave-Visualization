@@ -37,7 +37,8 @@ bathymetry of the beach.
     Theory and Background <background.rst>
     Team <team.rst> 
     Maintenance <maintenance.rst>
-
+    API <api.rst>
+    Bibliography <bibliography.rst>
 
 
 Indices and tables
@@ -46,12 +47,5 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
-
-Bibliography
-============
-
-.. bibliography:: biblio.bib
-
 
 

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Maintenance &mdash; Bathy-Vagues  documentation</title>
+  <title>API Documentation &mdash; Bathy-Vagues  documentation</title>
   
 
   
@@ -28,8 +28,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="API Documentation" href="api.html" />
-    <link rel="prev" title="Team" href="team.html" /> 
+    <link rel="next" title="src.networks package" href="api/src.networks.html" />
+    <link rel="prev" title="Maintenance" href="maintenance.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -82,13 +82,12 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="background.html"> Theory and Background</a></li>
 <li class="toctree-l1"><a class="reference internal" href="team.html"> Team</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#"> Maintenance</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#install-the-environment">Install the environment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#edit-the-documentation">Edit the documentation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#contribute-to-the-project">Contribute to the project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="maintenance.html"> Maintenance</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#"> API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/src.networks.html">src.networks package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/src.models.html">src.models package</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="api.html"> API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bibliography.html"> Bibliography</a></li>
 </ul>
 
@@ -135,13 +134,13 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Maintenance</li>
+      <li>API Documentation</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/maintenance.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/api.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -154,41 +153,29 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="maintenance">
-<h1>Maintenance<a class="headerlink" href="#maintenance" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="install-the-environment">
-<h2>Install the environment<a class="headerlink" href="#install-the-environment" title="Permalink to this headline">¶</a></h2>
-<p>This project is run with python, the best way to run our code is to generate a
-virtualenv and install the dependency as follows:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a virtualenv for the project</span>
-virtualenv bathy_env
-<span class="nb">source</span> bathy_env/bin/activate
-pip -r requirements.txt
-</pre></div>
-</div>
-</div>
-<div class="section" id="edit-the-documentation">
-<h2>Edit the documentation<a class="headerlink" href="#edit-the-documentation" title="Permalink to this headline">¶</a></h2>
-<p>The documentation is built with sphinx. Its content is gathered in the source
-folder of the <code class="docutils literal notranslate"><span class="pre">docs</span></code>. You can update the documentation after any change by
-starting the <code class="docutils literal notranslate"><span class="pre">build_html.sh</span></code> executable. Please note that if you add a
-<code class="docutils literal notranslate"><span class="pre">.rst</span></code> file you need to link it into the tree structure, for example in the
-toctree of the <code class="docutils literal notranslate"><span class="pre">index.rst</span></code>.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Update the Documentation</span>
-./build_html.sh
-</pre></div>
-</div>
-</div>
-<div class="section" id="contribute-to-the-project">
-<h2>Contribute to the project<a class="headerlink" href="#contribute-to-the-project" title="Permalink to this headline">¶</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">src</span></code> folder contains all the modules of the project. If you want to make
-your own module, please put a <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file into your package and add it
-to the <code class="docutils literal notranslate"><span class="pre">src</span></code>. The <code class="docutils literal notranslate"><span class="pre">bin</span></code> and the <code class="docutils literal notranslate"><span class="pre">tests</span></code> folders contains all the scripts.
-If you want to build such a script, don’t forget to put the global PATH at the
-root of the project by typing <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">context</span></code> at the head of your file to
-have access to the <code class="docutils literal notranslate"><span class="pre">src</span></code> packages or the <code class="docutils literal notranslate"><span class="pre">data</span></code> for example. I inform you
-that the commenting of your code will be hardly judged and validated by myself
-:p</p>
+  <div class="section" id="api-documentation">
+<h1>API Documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h1>
+<p>Python API for decoding Anoto dot pattern.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/src.networks.html">src.networks package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/src.networks.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/src.networks.autoencoder.html">src.networks.autoencoder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/src.networks.cnn.html">src.networks.cnn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/src.networks.generator.html">src.networks.generator</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/src.models.html">src.models package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/src.models.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/src.models.autoencoder.html">src.models.autoencoder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/src.models.cnn.html">src.models.cnn</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
 </div>
 </div>
 
@@ -200,10 +187,10 @@ that the commenting of your code will be hardly judged and validated by myself
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="api.html" class="btn btn-neutral float-right" title="API Documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="api/src.networks.html" class="btn btn-neutral float-right" title="src.networks package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="team.html" class="btn btn-neutral" title="Team" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="maintenance.html" class="btn btn-neutral" title="Maintenance" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

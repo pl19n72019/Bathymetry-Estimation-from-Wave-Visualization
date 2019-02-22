@@ -1,0 +1,552 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>src.networks.autoencoder &mdash; Bathy-Vagues  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Bathy-Vagues
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../background.html"> Theory and Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../team.html"> Team</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../maintenance.html"> Maintenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html"> API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../bibliography.html"> Bibliography</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Bathy-Vagues</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>src.networks.autoencoder</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for src.networks.autoencoder</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">File: autoencoder.py |</span>
+<span class="sd">Created on the 2019-02-22 |</span>
+<span class="sd">Github: https://github.com/pl19n72019</span>
+
+<span class="sd">This file contains the network.AutoEncoder class which provides useful</span>
+<span class="sd">functions to init, train, load, and save autoencoder models.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">keras.models</span> <span class="k">import</span> <span class="n">model_from_json</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="k">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">src.networks.generator</span> <span class="k">import</span> <span class="n">GeneratorAutoencoder</span>
+
+
+<div class="viewcode-block" id="AutoEncoder"><a class="viewcode-back" href="../../../api/src.networks.autoencoder.html#src.networks.autoencoder.AutoEncoder">[docs]</a><span class="k">class</span> <span class="nc">AutoEncoder</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Global functionalities of the auto-encoders.</span>
+
+<span class="sd">    This class treats the encoder and the decoder parts. It allows to train</span>
+<span class="sd">    auto-encoders (define in the package `models`), and to perform all classic</span>
+<span class="sd">    operations on the auto-encoders.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AutoEncoder.__init__"><a class="viewcode-back" href="../../../api/src.networks.autoencoder.html#src.networks.autoencoder.AutoEncoder.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dataset_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span>
+                 <span class="n">load_models</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Creation of the auto-encoder functionalities treatment object.</span>
+
+<span class="sd">        It loads and create the dataset and the models. Only 80% of the load</span>
+<span class="sd">        data are used for the training phase. The other 20% are use to validate</span>
+<span class="sd">        the model during the fitting phase. Moreover, the shape of the data</span>
+<span class="sd">        (train and test) are fitting to run on 2-dimensional convolutional</span>
+<span class="sd">        neural network (which offers the best results). If other network are</span>
+<span class="sd">        used, reshape the data at the input of the network. A generator</span>
+<span class="sd">        approach is used for loading the data, which means that the data is</span>
+<span class="sd">        loaded batch per batch.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            model: Model of auto-encoder (should be created in the package</span>
+<span class="sd">                `models`).</span>
+<span class="sd">            dataset_path (str): Path to the dataset (default: None). If it is</span>
+<span class="sd">                set to None, the current path is selected.</span>
+<span class="sd">            batch_size (int): Size of the batch.</span>
+<span class="sd">            load_models (str): Model to load (default: None). If it is set to</span>
+<span class="sd">                None, no model if load. If not, it should contain a encoder</span>
+<span class="sd">                name, and only its should be used (useful to pre-process the</span>
+<span class="sd">                data before the input of a next neural network).</span>
+<span class="sd">            version (int): Version of encoder to load (default: 0). If</span>
+<span class="sd">                load_models is not None, it refers to the version of encoder to</span>
+<span class="sd">                load. By default, it load the first model created by the outer-</span>
+<span class="sd">                loop.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This file should not be modified to be adapter to other networks.</span>
+<span class="sd">            Only the package `models` and the main script should be modified.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
+
+        <span class="k">if</span> <span class="n">load_models</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># load the model (complete auto-encoder) and the encoder</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__model</span> <span class="o">=</span> <span class="n">model</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__encoder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__model</span><span class="o">.</span><span class="n">encoder</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__autoencoder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__model</span><span class="o">.</span><span class="n">autoencoder</span><span class="p">()</span>
+
+            <span class="c1"># creation of the generators</span>
+            <span class="n">files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/dataset/train_TS/*.npy&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="s1">&#39;.&#39;</span> <span class="k">if</span> <span class="n">dataset_path</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dataset_path</span><span class="p">))</span>
+            <span class="n">ts_train</span><span class="p">,</span> <span class="n">ts_test</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span>
+                                                       <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_nb_train_samp</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ts_train</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_nb_test_samp</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ts_test</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_generator_train</span> <span class="o">=</span> <span class="n">GeneratorAutoencoder</span><span class="p">(</span><span class="n">ts_train</span><span class="p">,</span>
+                                                         <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_generator_test</span> <span class="o">=</span> <span class="n">GeneratorAutoencoder</span><span class="p">(</span><span class="n">ts_test</span><span class="p">,</span>
+                                                        <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;./saves/architectures/</span><span class="si">{}</span><span class="s1">.json&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">load_models</span><span class="p">),</span>
+                      <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">architecture</span><span class="p">:</span>
+                <span class="n">pp_model</span> <span class="o">=</span> <span class="n">model_from_json</span><span class="p">(</span><span class="n">architecture</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__encoder</span> <span class="o">=</span> <span class="n">pp_model</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">load_weights</span><span class="p">(</span><span class="n">load_models</span><span class="p">,</span> <span class="n">full</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AutoEncoder.compile"><a class="viewcode-back" href="../../../api/src.networks.autoencoder.html#src.networks.autoencoder.AutoEncoder.compile">[docs]</a>    <span class="k">def</span> <span class="nf">compile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="s1">&#39;adadelta&#39;</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="s1">&#39;mean_squared_error&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compile the complete model.</span>
+
+<span class="sd">        This method should be call only on new auto-encoders (the flag</span>
+<span class="sd">        load_models should be set to None).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            optimizer (str (name of optimizer) or optimizer instance):</span>
+<span class="sd">                Optimizer used to train the neural network (default:</span>
+<span class="sd">                &#39;adadelta&#39;).</span>
+<span class="sd">            loss (str (name of objective function) ob objective function):</span>
+<span class="sd">                Objective function used to analyze the network during the</span>
+<span class="sd">                different phases (default: &#39;mean_squared_error&#39;).</span>
+
+
+<span class="sd">        Note:</span>
+<span class="sd">            This method should not be modified to be adapter to other networks.</span>
+<span class="sd">            Only the package `models` and the main script should be modified.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__autoencoder</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="n">loss</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AutoEncoder.fit"><a class="viewcode-back" href="../../../api/src.networks.autoencoder.html#src.networks.autoencoder.AutoEncoder.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fname</span><span class="o">=</span><span class="s1">&#39;autoencoder&#39;</span><span class="p">,</span>
+            <span class="n">fname_enc</span><span class="o">=</span><span class="s1">&#39;encoder&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Trains the model for a given number of epochs (iterations on a</span>
+<span class="sd">        dataset).</span>
+
+<span class="sd">        This method should be call only on new auto-encoders (the flag</span>
+<span class="sd">        load_models should be set to None).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            epochs (int): Number of epochs to run on each outer-loop (default:</span>
+<span class="sd">                50). At the end of each epoch iterations, the neural networks</span>
+<span class="sd">                are saved.</span>
+<span class="sd">            repeat (int): Number of outer-loops (default: 1). At the end of the</span>
+<span class="sd">                training phase, `epochs * repeats` epochs are performed.</span>
+<span class="sd">                Moreover, `repeat` networks are saved on the disk.</span>
+<span class="sd">            fname (str): Name of the complete neural network on the disk</span>
+<span class="sd">                (default: &#39;autoencoder&#39;).</span>
+<span class="sd">            fname_enc (str): Name of the encoder part of the neural network on</span>
+<span class="sd">                the disk (default: &#39;encoder&#39;).</span>
+<span class="sd">            verbose (int, 0, 1, or 2): Verbosity mode (default: 1). 0 = silent,</span>
+<span class="sd">                1 = progress bar, 2 = one line per epoch.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A record of training loss values and metrics values at successive</span>
+<span class="sd">            epochs, as well as validation loss values and validation metrics</span>
+<span class="sd">            values (if applicable).</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This method should not be modified to be adapter to other networks.</span>
+<span class="sd">            Only the package `models` and the main script should be modified.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># saving the two architectures</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_architecture</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="n">fname</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_architecture</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="n">fname_enc</span><span class="p">,</span> <span class="n">full</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># training of the model and saving of the history</span>
+        <span class="n">history</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">repeat</span><span class="p">):</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__autoencoder</span><span class="o">.</span> \
+                <span class="n">fit_generator</span><span class="p">(</span><span class="n">generator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_generator_train</span><span class="p">,</span>
+                              <span class="n">steps_per_epoch</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nb_train_samp</span><span class="o">//</span> \
+                                               <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">),</span>
+                              <span class="n">epochs</span><span class="o">=</span><span class="n">epochs</span><span class="p">,</span>
+                              <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                              <span class="n">validation_data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_generator_test</span><span class="p">,</span>
+                              <span class="n">validation_steps</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nb_test_samp</span><span class="o">//</span> \
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">))</span>
+            <span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">history</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_weights</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span> <span class="n">architecture</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_weights</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fname_enc</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span> <span class="n">full</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                              <span class="n">architecture</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># the format of history is flatten</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="n">history</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">l</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">history</span><span class="p">])</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">}</span></div>
+
+<div class="viewcode-block" id="AutoEncoder.predict"><a class="viewcode-back" href="../../../api/src.networks.autoencoder.html#src.networks.autoencoder.AutoEncoder.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;&quot;Generates complete output predictions for the input samples</span>
+<span class="sd">        (outputs of the auto-encoder neural network).</span>
+
+<span class="sd">        This method should be call only on new auto-encoders (the flag</span>
+<span class="sd">        load_models should be set to None).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x (numpy.ndarray like): Input data.</span>
+<span class="sd">            batch_size (int): Number of samples per pass (default: 128).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Numpy array(s) of reshaped predictions (for displaying).</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This method should not be modified to be adapter to other networks.</span>
+<span class="sd">            Only the package `models` and the main script should be modified.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__encoder</span><span class="o">.</span><span class="n">output_shape</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__encoder</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">)</span> \
+            <span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="AutoEncoder.encode"><a class="viewcode-back" href="../../../api/src.networks.autoencoder.html#src.networks.autoencoder.AutoEncoder.encode">[docs]</a>    <span class="k">def</span> <span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;&quot;Generates output predictions for the input samples (outputs of the</span>
+<span class="sd">        encoder neural network).</span>
+
+<span class="sd">        This method can be call on every instantiation (the flag load_models is</span>
+<span class="sd">        not intended to be set to None).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x (numpy.ndarray like): Input data. Should be an array of shape</span>
+<span class="sd">                (nb_images, width_im, height_im, 1). 1 stands for grayscale</span>
+<span class="sd">                images.</span>
+<span class="sd">            batch_size (int): Number of samples per pass (default: 128).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Numpy array(s) of reshaped predictions (for two-dimensional</span>
+<span class="sd">            convolutional neural network).</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This method should not be modified to be adapter to other networks.</span>
+<span class="sd">            Only the package `models` and the main script should be modified.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__encoder</span><span class="o">.</span><span class="n">output_shape</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__encoder</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">)</span> \
+            <span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="AutoEncoder.encode_dataset"><a class="viewcode-back" href="../../../api/src.networks.autoencoder.html#src.networks.autoencoder.AutoEncoder.encode_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">encode_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_in</span><span class="p">,</span> <span class="n">data_out</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generate an encoded data from a timestack data.</span>
+
+<span class="sd">        Be aware of the fact that your data needs to have the same</span>
+<span class="sd">        dimension that the one required by the model. If you want this</span>
+<span class="sd">        encoded data to be used for the training of our CNN model, we</span>
+<span class="sd">        advise you to put it in a folder named &#39;train_encoded_TS&#39;.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data_in (str): Path to the data to encode (put &#39;.&#39; if you want</span>
+<span class="sd">                to specify that the data is in the local path).</span>
+<span class="sd">            data_out (str): Path where to stock the encoded data</span>
+<span class="sd">                (put &#39;.&#39; if you want to specify that the data is in</span>
+<span class="sd">                the local path).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__encoder</span><span class="o">.</span><span class="n">input_shape</span>
+        <span class="n">ts_names</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">data_in</span> <span class="o">+</span> <span class="s1">&#39;/dataset/train_TS/*.npy&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">ts_names</span><span class="p">:</span>
+            <span class="n">ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">data</span><span class="p">)[</span><span class="mi">200</span><span class="p">:]])</span>
+            <span class="n">ts_encoded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__encoder</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span>
+                                                           <span class="mi">1</span><span class="p">))[</span><span class="mi">0</span><span class="p">,:,:,</span><span class="mi">0</span><span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="mi">12</span><span class="p">:])</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">data_out</span> <span class="o">+</span> <span class="s1">&#39;/dataset/train_encoded_TS/&#39;</span> <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="mi">12</span><span class="p">:],</span>
+                    <span class="n">ts_encoded</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AutoEncoder.save_weights"><a class="viewcode-back" href="../../../api/src.networks.autoencoder.html#src.networks.autoencoder.AutoEncoder.save_weights">[docs]</a>    <span class="k">def</span> <span class="nf">save_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="o">=</span><span class="s1">&#39;autoencoder&#39;</span><span class="p">,</span> <span class="n">full</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">architecture</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Saves the weights of the networks.</span>
+
+<span class="sd">        This method can be call on every instantiation (the flag load_models is</span>
+<span class="sd">        not intended to be set to None) if full is set to False. If not, this</span>
+<span class="sd">        method should not be call.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            fname (str): Name of the file to save (default: &#39;autoencoder&#39;).</span>
+<span class="sd">            full (bool): Network flag (default: True). If `full` is set to</span>
+<span class="sd">                True, the auto-encoder is saved and if not, only the encoder is</span>
+<span class="sd">                saved.</span>
+<span class="sd">            architecture (bool): Architecture flag (default: True). If</span>
+<span class="sd">                `architecture` is set to True, the architecture the the network</span>
+<span class="sd">                related to the flag `full` is saved in a JSON format.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This method should not be modified to be adapter to other networks.</span>
+<span class="sd">            Only the package `models` and the main script should be modified.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">file</span> <span class="o">=</span> <span class="s1">&#39;./saves/weights/</span><span class="si">{}</span><span class="s1">.h5&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">full</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__autoencoder</span><span class="o">.</span><span class="n">save_weights</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__encoder</span><span class="o">.</span><span class="n">save_weights</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">architecture</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_architecture</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">full</span><span class="o">=</span><span class="n">full</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AutoEncoder.save_architecture"><a class="viewcode-back" href="../../../api/src.networks.autoencoder.html#src.networks.autoencoder.AutoEncoder.save_architecture">[docs]</a>    <span class="k">def</span> <span class="nf">save_architecture</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="o">=</span><span class="s1">&#39;autoencoder&#39;</span><span class="p">,</span> <span class="n">full</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Saves the architectures of the networks.</span>
+
+<span class="sd">        This method can be call on every instantiation (the flag load_models is</span>
+<span class="sd">        not intended to be set to None) if full is set to False. If not, this</span>
+<span class="sd">        method should not be call.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            fname (str): Name of the file to save (default: &#39;autoencoder&#39;).</span>
+<span class="sd">            full (bool): Network flag (default: True). If `full` is set to</span>
+<span class="sd">                True, the auto-encoder is saved and if not, only the encoder is</span>
+<span class="sd">                saved.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This method should not be modified to be adapter to other networks.</span>
+<span class="sd">            Only the package `models` and the main script should be modified.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">file</span> <span class="o">=</span> <span class="s1">&#39;./saves/architectures/</span><span class="si">{}</span><span class="s1">.json&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">full</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">architecture</span><span class="p">:</span>
+                <span class="n">architecture</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__autoencoder</span><span class="o">.</span><span class="n">to_json</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">architecture</span><span class="p">:</span>
+                <span class="n">architecture</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__encoder</span><span class="o">.</span><span class="n">to_json</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="AutoEncoder.load_weights"><a class="viewcode-back" href="../../../api/src.networks.autoencoder.html#src.networks.autoencoder.AutoEncoder.load_weights">[docs]</a>    <span class="k">def</span> <span class="nf">load_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="o">=</span><span class="s1">&#39;autoencoder&#39;</span><span class="p">,</span> <span class="n">full</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Loads the weights of the networks.</span>
+
+<span class="sd">        This method can be call on every instantiation (the flag load_models is</span>
+<span class="sd">        not intended to be set to None) if full is set to False. If not, this</span>
+<span class="sd">        method should not be call.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            fname (str): Name of the file to save (default: &#39;autoencoder&#39;).</span>
+<span class="sd">            full (bool): Network flag (default: True). If `full` is set to</span>
+<span class="sd">                True, the auto-encoder is saved and if not, only the encoder is</span>
+<span class="sd">                saved.</span>
+<span class="sd">            version (int or str): Version of the network weights to load</span>
+<span class="sd">                (default: 0). It refers to the `repeat` flag in the fitting</span>
+<span class="sd">                method.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This method should not be modified to be adapter to other networks.</span>
+<span class="sd">            Only the package `models` and the main script should be modified.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">file</span> <span class="o">=</span> <span class="s1">&#39;./saves/weights/</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">.h5&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">full</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__autoencoder</span><span class="o">.</span><span class="n">load_weights</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__encoder</span><span class="o">.</span><span class="n">load_weights</span><span class="p">(</span><span class="n">file</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AutoEncoder.save_losses"><a class="viewcode-back" href="../../../api/src.networks.autoencoder.html#src.networks.autoencoder.AutoEncoder.save_losses">[docs]</a>    <span class="k">def</span> <span class="nf">save_losses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">history</span><span class="p">,</span> <span class="n">fname</span><span class="o">=</span><span class="s1">&#39;autoencoder&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Saves the history given as input.</span>
+
+<span class="sd">        This method can be call on every instantiation (the flag load_models is</span>
+<span class="sd">        not intended to be set to None).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            history (dict): History the save on disk.</span>
+<span class="sd">            fname (str): Name of the file to save (default: &#39;autoencoder&#39;).</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This method should not be modified to be adapter to other networks.</span>
+<span class="sd">            Only the package `models` and the main script should be modified.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;./saves/losses/</span><span class="si">{}</span><span class="s1">.npy&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fname</span><span class="p">),</span>
+                <span class="n">history</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AutoEncoder.load_losses"><a class="viewcode-back" href="../../../api/src.networks.autoencoder.html#src.networks.autoencoder.AutoEncoder.load_losses">[docs]</a>    <span class="k">def</span> <span class="nf">load_losses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="o">=</span><span class="s1">&#39;autoencoder&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Loads the history given as input.</span>
+
+<span class="sd">        This method can be call on every instantiation (the flag load_models is</span>
+<span class="sd">        not intended to be set to None).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            fname (str): Name of the file to load (default: &#39;autoencoder&#39;).</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This method should not be modified to be adapter to other networks.</span>
+<span class="sd">            Only the package `models` and the main script should be modified.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
+            <span class="s1">&#39;./saves/losses/</span><span class="si">{}</span><span class="s1">.npy&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fname</span><span class="p">))</span><span class="o">.</span><span class="n">item</span><span class="p">()</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, PL19n72019
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

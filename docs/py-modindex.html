@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Theory and Background &mdash; Bathy-Vagues  documentation</title>
+  <title>Python Module Index &mdash; Bathy-Vagues  documentation</title>
   
 
   
@@ -28,8 +28,9 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Team" href="team.html" />
-    <link rel="prev" title="Welcome to Bathy-Vagues’s documentation!" href="index.html" /> 
+ 
+
+
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -79,12 +80,8 @@
             
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#"> Theory and Background</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#physics-of-the-wave">Physics of the wave</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#timestack">Timestack</a></li>
-</ul>
-</li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="background.html"> Theory and Background</a></li>
 <li class="toctree-l1"><a class="reference internal" href="team.html"> Team</a></li>
 <li class="toctree-l1"><a class="reference internal" href="maintenance.html"> Maintenance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html"> API</a></li>
@@ -134,14 +131,10 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Theory and Background</li>
+      <li>Python Module Index</li>
     
     
       <li class="wy-breadcrumbs-aside">
-        
-            
-            <a href="_sources/background.rst.txt" rel="nofollow"> View page source</a>
-          
         
       </li>
     
@@ -153,51 +146,65 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="theory-and-background">
-<h1>Theory and Background<a class="headerlink" href="#theory-and-background" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="physics-of-the-wave">
-<h2>Physics of the wave<a class="headerlink" href="#physics-of-the-wave" title="Permalink to this headline">¶</a></h2>
-<p>Bathymetry estimation is not a new problem. Actually, there are already few
-solutions to approximate the sea floor. Many of them are based on what we call
-a DIA (Depth Inversion Algorithms), this article <a class="reference internal" href="bibliography.html#dia" id="id1">[Gri98]</a> summarize few of
-them. Such an algorithm is based on the inversion of a dispersion relationship
-between the celerity and the depth.</p>
-<div class="math notranslate nohighlight">
-\[\Omega (\underline{k}) = \sqrt{gk\tanh(kh_r)} \mbox{ avec } k = \|\underline{k}\|\]</div>
-<p>But actually, all is physically linked, thus the bathymetry influences also
-the wavelength, the wave height, or the refraction. I invite you to check the
-chapter 8 of this book <a class="reference internal" href="bibliography.html#thual" id="id2">[Thu10]</a> for more information about the physics of
-the waves.</p>
-</div>
-<div class="section" id="timestack">
-<h2>Timestack<a class="headerlink" href="#timestack" title="Permalink to this headline">¶</a></h2>
-<p>We first need a representation of the waves according to time. Our model is
-quite simplified, so we will consider here an infinite beach where the
-bathymetry just varies on the <span class="math notranslate nohighlight">\(x\)</span> axis. In that case, a wave can be
-described by one vector carrying the elevation according to the position
-<span class="math notranslate nohighlight">\(x\)</span> at a time <span class="math notranslate nohighlight">\(t\)</span>. Concatenating these vectors along time create an
-image called timestack. Here is an example:</p>
-<p><a class="reference internal" href="_images/timestack.png"><img alt="Timestack" src="_images/timestack.png" style="width: 45%;" /></a>  <a class="reference internal" href="_images/bathy.png"><img alt="Bathymetry" src="_images/bathy.png" style="width: 45%;" /></a></p>
-<p>The color represents the height of the water at a certain point <span class="math notranslate nohighlight">\(x\)</span>.
-These timestacks are built from real videos of litoral, the process to get
-timestack from them are described in this article <a class="reference internal" href="bibliography.html#almar" id="id3">[ABSR09]</a>.</p>
-</div>
-</div>
+
+   <h1>Python Module Index</h1>
+
+   <div class="modindex-jumpbox">
+   <a href="#cap-s"><strong>s</strong></a>
+   </div>
+
+   <table class="indextable modindextable">
+     <tr class="pcap"><td></td><td>&#160;</td><td></td></tr>
+     <tr class="cap" id="cap-s"><td></td><td>
+       <strong>s</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-1" style="display: none" alt="-" /></td>
+       <td>
+       <a href="api/src.html#module-src"><code class="xref">src</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="api/src.models.html#module-src.models"><code class="xref">src.models</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="api/src.models.autoencoder.html#module-src.models.autoencoder"><code class="xref">src.models.autoencoder</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="api/src.models.cnn.html#module-src.models.cnn"><code class="xref">src.models.cnn</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="api/src.networks.html#module-src.networks"><code class="xref">src.networks</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="api/src.networks.autoencoder.html#module-src.networks.autoencoder"><code class="xref">src.networks.autoencoder</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="api/src.networks.cnn.html#module-src.networks.cnn"><code class="xref">src.networks.cnn</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="api/src.networks.generator.html#module-src.networks.generator"><code class="xref">src.networks.generator</code></a></td><td>
+       <em></em></td></tr>
+   </table>
 
 
            </div>
            
           </div>
           <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="team.html" class="btn btn-neutral float-right" title="Team" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="index.html" class="btn btn-neutral" title="Welcome to Bathy-Vagues’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
   
 
   <hr/>

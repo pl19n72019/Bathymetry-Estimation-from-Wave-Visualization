@@ -1,4 +1,16 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
+"""
+File: cnn.py |
+Created on the 2019-02-22 |
+Github: https://github.com/pl19n72019
+
+
+This file contains the network.CNN class which provides useful functions to
+init, train, load, and save cnn models.
+"""
+
 
 import glob
 import os
@@ -18,12 +30,10 @@ class CNN:
     This class  allows to train convolutional network network (define in the
     package `models`), and to perform all classic operations on the neural
     networks.
-
-    Attributes:
-
     """
 
-    def __init__(self, model=None, dataset_path=None, batch_size=128, load_models=None, version=0):
+    def __init__(self, model=None, dataset_path=None, batch_size=128,
+                 load_models=None, version=0):
         """Creation of the CNN functionalities treatment object.
 
         It loads and create the dataset and the models. Only 80% of the load
@@ -32,10 +42,6 @@ class CNN:
         (train and test) are fitting to run on 2-dimensional convolutional
         neural network (which offers the best results). If other network are
         used, reshape the data at the input of the network.
-
-        Note:
-            This file should not be modified to be adapter to other networks.
-            Only the package `models` and the main script should be modified.
 
         Args:
             model: Model of auto-encoder (should be created in the package
@@ -49,8 +55,12 @@ class CNN:
                 data bedore the input of a next neural network).
             version (int): Version of encoder to load (default: 0). If
                 load_models is not None, it refers to the version of encoder to
-                load. By default, it loads the first model created by the outer-
-                loop.
+                load. By default, it loads the first model created by the
+                outer-loop.
+
+        Note:
+            This file should not be modified to be adapter to other networks.
+            Only the package `models` and the main script should be modified.
         """
         self.batch_size = batch_size
 
@@ -59,21 +69,25 @@ class CNN:
             self.__model = model.model()
 
             # creation of the generator
-            ts_files = sorted(glob.glob('{}/dataset/train_encoded_TS/*.npy'.format(
-                '.' if dataset_path is None else dataset_path)))
+            ts_files = sorted(glob.glob('{}/dataset/train_encoded_TS/*.npy' \
+                                        .format('.' if dataset_path is None \
+                                                else dataset_path)))
             gt_files = sorted(glob.glob('{}/dataset/train_GT/*.npy'.format(
                 '.' if dataset_path is None else dataset_path)))
 
-            ts_train, ts_test, b_train, b_test = train_test_split(ts_files, gt_files,
+            ts_train, ts_test, b_train, b_test = train_test_split(ts_files,
+                                                                  gt_files,
                                                                   test_size=0.2)
 
             self._nb_train_samp = len(ts_train)
             self._nb_test_samp = len(ts_test)
-            self._generator_train = GeneratorCNN(ts_train, b_train, self.batch_size)
-            self._generator_test = GeneratorCNN(ts_test, b_test, self.batch_size)
+            self._generator_train = GeneratorCNN(ts_train, b_train,
+                                                 self.batch_size)
+            self._generator_test = GeneratorCNN(ts_test, b_test,
+                                                self.batch_size)
         else:
-            with open('./saves/architectures/{}.json'.format(load_models), 'r') \
-                    as architecture:
+            with open('./saves/architectures/{}.json'.format(load_models),
+                      'r') as architecture:
                 pp_model = model_from_json(architecture.read())
             self.__model = pp_model
             self.load_weights(load_models, version=version)
@@ -84,17 +98,17 @@ class CNN:
 
         This method should be call only on new neural network.
 
-        Note:
-            This method should not be modified to be adapter to other networks.
-            Only the package `models` and the main script should be modified.
-
         Args:
-            optimizer (str (name of optimizer) or optimizer instance): Optimizer
-                used to train the neural network (default: 'adadelta').
+            optimizer (str (name of optimizer) or optimizer instance):
+                Optimizer used to train the neural network (default:
+                'adadelta').
             loss (str (name of objective function) ob objective function):
                 Objective function used to analyze the network during the
                 different phases (default: 'mean_squared_error').
 
+        Note:
+            This method should not be modified to be adapter to other networks.
+            Only the package `models` and the main script should be modified.
         """
         self.__model.compile(optimizer=optimizer, loss=loss)
 
@@ -103,10 +117,6 @@ class CNN:
         dataset).
 
         This method should be call only on new neural network.
-
-        Note:
-            This method should not be modified to be adapter to other networks.
-            Only the package `models` and the main script should be modified.
 
         Args:
             epochs (int): Number of epochs to run on each outer-loop (default:
@@ -125,6 +135,9 @@ class CNN:
             epochs, as well as validation loss values and validation metrics
             values (if applicable).
 
+        Note:
+            This method should not be modified to be adapter to other networks.
+            Only the package `models` and the main script should be modified.
         """
         # saving the two architectures
         self.save_architecture(fname=fname)
@@ -132,12 +145,15 @@ class CNN:
         # training of the model and saving of the history
         history = []
         for i in range(repeat):
-            h = self.__model.fit_generator(generator=self._generator_train,
-                                           steps_per_epoch=(self._nb_train_samp//self.batch_size),
-                                           epochs=epochs,
-                                           verbose=verbose,
-                                           validation_data=self._generator_test,
-                                           validation_steps=(self._nb_test_samp//self.batch_size))
+            h = self.__model. \
+                fit_generator(generator=self._generator_train,
+                              steps_per_epoch=(self._nb_train_samp// \
+                                               self.batch_size),
+                              epochs=epochs,
+                              verbose=verbose,
+                              validation_data=self._generator_test,
+                              validation_steps=(self._nb_test_samp// \
+                                                self.batch_size))
             history.append(h.history)
             self.save_weights('{}.{}'.format(fname, i), architecture=False)
 
@@ -150,20 +166,21 @@ class CNN:
 
         This method should be call only on new neural network.
 
-        Note:
-            This method should not be modified to be adapter to other networks.
-            Only the package `models` and the main script should be modified.
-
         Args:
             x (numpy.ndarray like): Input data.
             batch_size (int): Number of samples per pass (default: 128).
             smooth (bool): Smoothing flag (default: False). If it is set to
-                True, the output is smoothed using the `smooth_args` parameters.
-            smooth_args (tuple): Smooth algorithm parameters (default: (53, 2)).
+                True, the output is smoothed using the `smooth_args`
+                parameters.
+            smooth_args (tuple): Smooth algorithm parameters (default:
+                (53, 2)).
 
         Returns:
             Numpy array(s) of reshaped predictions (for displaying).
 
+        Note:
+            This method should not be modified to be adapter to other networks.
+            Only the package `models` and the main script should be modified.
         """
         _, output_size = self.__model.output_shape
         prediction = self.__model.predict(x, batch_size=batch_size) \
@@ -183,16 +200,15 @@ class CNN:
 
         This method can be call on every instantiation.
 
-        Note:
-            This method should not be modified to be adapter to other networks.
-            Only the package `models` and the main script should be modified.
-
         Args:
             fname (str): Name of the file to save (default: 'cnn').
             architecture (bool): Architecture flag (default: True). If
                 `architecture` is set to True, the architecture the the network
                 related to the flag `full` is saved in a JSON format.
 
+        Note:
+            This method should not be modified to be adapter to other networks.
+            Only the package `models` and the main script should be modified.
         """
         self.__model.save_weights(
             './saves/weights/{}.h5'.format(fname))
@@ -205,13 +221,12 @@ class CNN:
 
         This method can be call on every instantiation.
 
-        Note:
-            This method should not be modified to be adapter to other networks.
-            Only the package `models` and the main script should be modified.
-
         Args:
             fname (str): Name of the file to save (default: 'cnn').
 
+        Note:
+            This method should not be modified to be adapter to other networks.
+            Only the package `models` and the main script should be modified.
         """
         with open('./saves/architectures/{}.json'.format(fname),
                   'w') as architecture:
@@ -222,16 +237,15 @@ class CNN:
 
         This method can be call on every instantiation.
 
-        Note:
-            This method should not be modified to be adapter to other networks.
-            Only the package `models` and the main script should be modified.
-
         Args:
             fname (str): Name of the file to save (default: 'cnn').
             version (int or str): Version of the network weights to load
                 (default: 0). It refers to the `repeat` flag in the fitting
                 method.
 
+        Note:
+            This method should not be modified to be adapter to other networks.
+            Only the package `models` and the main script should be modified.
         """
         self.__model.load_weights(
             './saves/weights/{}.{}.h5'.format(fname, version))
@@ -241,14 +255,13 @@ class CNN:
 
         This method can be call on every instantiation.
 
-        Note:
-            This method should not be modified to be adapter to other networks.
-            Only the package `models` and the main script should be modified.
-
         Args:
             history (dict): History the save on disk.
             fname (str): Name of the file to save (default: 'cnn').
 
+        Note:
+            This method should not be modified to be adapter to other networks.
+            Only the package `models` and the main script should be modified.
         """
         np.save('./saves/losses/{}.npy'.format(fname),
                 history)
@@ -259,13 +272,12 @@ class CNN:
         This method can be call on every instantiation (the flag load_models is
         not intended to be set to None).
 
-        Note:
-            This method should not be modified to be adapter to other networks.
-            Only the package `models` and the main script should be modified.
-
         Args:
             fname (str): Name of the file to load (default: 'cnn').
 
+        Note:
+            This method should not be modified to be adapter to other networks.
+            Only the package `models` and the main script should be modified.
         """
         return np.load(
             './saves/losses/{}.npy'.format(fname)).item()

@@ -1,6 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""
+File: cnn.py |
+Created on the 2019-02-22 |
+Github: https://github.com/pl19n72019
+
+This file contains the different models of cnn.
+"""
+
+
 from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
 from keras.models import Sequential
 
@@ -16,7 +25,6 @@ class Model1:
     connected layer (a hidden flatten layer is required to link both).
 
     Examples:
-        This example can be run by executing the file `cnn.py`.
 
         >>> cnn = Model1((50, 100, 1), 200)
         >>> print(cnn.model().summary())
@@ -30,14 +38,14 @@ class Model1:
         have originally two dimensions, the timestack size. The size of the
         output is the number of points in the discretization of the domain.
 
-        Note:
-            The model can be used as a template. The headers and the
-            specifications need to be fulfilled.
-
         Args:
             input_shape (tuple): Input shape of the model, typically (_, _, 1).
             output_size (int): Output size of the model (discretization of the
                 domain).
+
+        Note:
+            The model can be used as a template. The headers and the
+            specifications need to be fulfilled.
         """
         self.__cnn = Sequential(name="CNN")
 
@@ -77,12 +85,5 @@ class Model1:
 
         Returns:
             The model in the keras format.
-
         """
         return self.__cnn
-
-
-if __name__ == "__main__":
-    # this model is the classic model (output of the first auto-encoder model)
-    cnn = Model1((50, 200, 1), 200)
-    print(cnn.model().summary())

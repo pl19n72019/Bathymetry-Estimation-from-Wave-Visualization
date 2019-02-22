@@ -1,0 +1,488 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>src.networks.cnn &mdash; Bathy-Vagues  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="src.networks.generator" href="src.networks.generator.html" />
+    <link rel="prev" title="src.networks.autoencoder" href="src.networks.autoencoder.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Bathy-Vagues
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../background.html"> Theory and Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../team.html"> Team</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../maintenance.html"> Maintenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html"> API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bibliography.html"> Bibliography</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Bathy-Vagues</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../api.html">API Documentation</a> &raquo;</li>
+        
+          <li><a href="src.networks.html">src.networks package</a> &raquo;</li>
+        
+      <li>src.networks.cnn</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/src.networks.cnn.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-src.networks.cnn">
+<span id="src-networks-cnn"></span><h1>src.networks.cnn<a class="headerlink" href="#module-src.networks.cnn" title="Permalink to this headline">¶</a></h1>
+<p>File: cnn.py |
+Created on the 2019-02-22 |
+Github: <a class="reference external" href="https://github.com/pl19n72019">https://github.com/pl19n72019</a></p>
+<p>This file contains the network.CNN class which provides useful functions to
+init, train, load, and save cnn models.</p>
+<dl class="class">
+<dt id="src.networks.cnn.CNN">
+<em class="property">class </em><code class="descclassname">src.networks.cnn.</code><code class="descname">CNN</code><span class="sig-paren">(</span><em>model=None</em>, <em>dataset_path=None</em>, <em>batch_size=128</em>, <em>load_models=None</em>, <em>version=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/networks/cnn.html#CNN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.networks.cnn.CNN" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Global functionalities of the convolutional neural networks.</p>
+<p>This class  allows to train convolutional network network (define in the
+package <cite>models</cite>), and to perform all classic operations on the neural
+networks.</p>
+<dl class="method">
+<dt id="src.networks.cnn.CNN.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>model=None</em>, <em>dataset_path=None</em>, <em>batch_size=128</em>, <em>load_models=None</em>, <em>version=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/networks/cnn.html#CNN.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.networks.cnn.CNN.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creation of the CNN functionalities treatment object.</p>
+<p>It loads and create the dataset and the models. Only 80% of the load
+data are used for the training phase. The other 20% are use to validate
+the model during the fitting phase. Moreover, the shape of the data
+(train and test) are fitting to run on 2-dimensional convolutional
+neural network (which offers the best results). If other network are
+used, reshape the data at the input of the network.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>model</strong> – Model of auto-encoder (should be created in the package
+<cite>models</cite>).</li>
+<li><strong>dataset_path</strong> (<em>str</em>) – Path to the dataset (default: None). If it is
+set to None, the current path is selected.</li>
+<li><strong>batch_size</strong> (<em>int</em>) – Size of the batch.</li>
+<li><strong>load_models</strong> (<em>str</em>) – Model to load (default: None). If it is set to
+None, no model is loaded. If not, it should contain an encoder
+name, and only its should be used (useful to pre-process the
+data bedore the input of a next neural network).</li>
+<li><strong>version</strong> (<em>int</em>) – Version of encoder to load (default: 0). If
+load_models is not None, it refers to the version of encoder to
+load. By default, it loads the first model created by the
+outer-loop.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This file should not be modified to be adapter to other networks.
+Only the package <cite>models</cite> and the main script should be modified.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.networks.cnn.CNN.compile">
+<code class="descname">compile</code><span class="sig-paren">(</span><em>optimizer='adadelta'</em>, <em>loss='mean_squared_error'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/networks/cnn.html#CNN.compile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.networks.cnn.CNN.compile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compile the complete model.</p>
+<p>This method should be call only on new neural network.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>optimizer</strong> (<em>str</em><em> (</em><em>name of optimizer</em><em>) or </em><em>optimizer instance</em>) – Optimizer used to train the neural network (default:
+‘adadelta’).</li>
+<li><strong>loss</strong> (<em>str</em><em> (</em><em>name of objective function</em><em>) </em><em>ob objective function</em>) – Objective function used to analyze the network during the
+different phases (default: ‘mean_squared_error’).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This method should not be modified to be adapter to other networks.
+Only the package <cite>models</cite> and the main script should be modified.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.networks.cnn.CNN.fit">
+<code class="descname">fit</code><span class="sig-paren">(</span><em>epochs=50</em>, <em>repeat=1</em>, <em>fname='cnn'</em>, <em>verbose=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/networks/cnn.html#CNN.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.networks.cnn.CNN.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Trains the model for a given number of epochs (iterations on a
+dataset).</p>
+<p>This method should be call only on new neural network.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>epochs</strong> (<em>int</em>) – Number of epochs to run on each outer-loop (default:
+50). At the end of each epoch iterations, the neural networks
+are saved.</li>
+<li><strong>repeat</strong> (<em>int</em>) – Number of outer-loops (default: 1). At the end of the
+training phase, <cite>epochs * repeats</cite> epochs are performed.
+Moreover, <cite>repeat</cite> networks are saved on the disk.</li>
+<li><strong>fname</strong> (<em>str</em>) – Name of the complete neural network on the disk
+(default: ‘cnn’).</li>
+<li><strong>verbose</strong> (<em>int</em><em>, </em><em>0</em><em>, </em><em>1</em><em>, or </em><em>2</em>) – Verbosity mode (default: 1). 0 = silent,
+1 = progress bar, 2 = one line per epoch.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A record of training loss values and metrics values at successive
+epochs, as well as validation loss values and validation metrics
+values (if applicable).</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This method should not be modified to be adapter to other networks.
+Only the package <cite>models</cite> and the main script should be modified.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.networks.cnn.CNN.load_losses">
+<code class="descname">load_losses</code><span class="sig-paren">(</span><em>fname='cnn'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/networks/cnn.html#CNN.load_losses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.networks.cnn.CNN.load_losses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads the history given as input.</p>
+<p>This method can be call on every instantiation (the flag load_models is
+not intended to be set to None).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fname</strong> (<em>str</em>) – Name of the file to load (default: ‘cnn’).</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This method should not be modified to be adapter to other networks.
+Only the package <cite>models</cite> and the main script should be modified.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.networks.cnn.CNN.load_weights">
+<code class="descname">load_weights</code><span class="sig-paren">(</span><em>fname='cnn'</em>, <em>version=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/networks/cnn.html#CNN.load_weights"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.networks.cnn.CNN.load_weights" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads the weights of the networks.</p>
+<p>This method can be call on every instantiation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fname</strong> (<em>str</em>) – Name of the file to save (default: ‘cnn’).</li>
+<li><strong>version</strong> (<em>int</em><em> or </em><em>str</em>) – Version of the network weights to load
+(default: 0). It refers to the <cite>repeat</cite> flag in the fitting
+method.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This method should not be modified to be adapter to other networks.
+Only the package <cite>models</cite> and the main script should be modified.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.networks.cnn.CNN.predict">
+<code class="descname">predict</code><span class="sig-paren">(</span><em>x</em>, <em>batch_size=128</em>, <em>smooth=False</em>, <em>smooth_args=(53</em>, <em>2)</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/networks/cnn.html#CNN.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.networks.cnn.CNN.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates complete predictions for the input samples.</p>
+<p>This method should be call only on new neural network.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>numpy.ndarray like</em>) – Input data.</li>
+<li><strong>batch_size</strong> (<em>int</em>) – Number of samples per pass (default: 128).</li>
+<li><strong>smooth</strong> (<em>bool</em>) – Smoothing flag (default: False). If it is set to
+True, the output is smoothed using the <cite>smooth_args</cite>
+parameters.</li>
+<li><strong>smooth_args</strong> (<em>tuple</em>) – Smooth algorithm parameters (default:
+(53, 2)).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Numpy array(s) of reshaped predictions (for displaying).</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This method should not be modified to be adapter to other networks.
+Only the package <cite>models</cite> and the main script should be modified.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.networks.cnn.CNN.save_architecture">
+<code class="descname">save_architecture</code><span class="sig-paren">(</span><em>fname='cnn'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/networks/cnn.html#CNN.save_architecture"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.networks.cnn.CNN.save_architecture" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves the architectures of the networks.</p>
+<p>This method can be call on every instantiation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fname</strong> (<em>str</em>) – Name of the file to save (default: ‘cnn’).</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This method should not be modified to be adapter to other networks.
+Only the package <cite>models</cite> and the main script should be modified.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.networks.cnn.CNN.save_losses">
+<code class="descname">save_losses</code><span class="sig-paren">(</span><em>history</em>, <em>fname='cnn'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/networks/cnn.html#CNN.save_losses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.networks.cnn.CNN.save_losses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves the history given as input.</p>
+<p>This method can be call on every instantiation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>history</strong> (<em>dict</em>) – History the save on disk.</li>
+<li><strong>fname</strong> (<em>str</em>) – Name of the file to save (default: ‘cnn’).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This method should not be modified to be adapter to other networks.
+Only the package <cite>models</cite> and the main script should be modified.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.networks.cnn.CNN.save_weights">
+<code class="descname">save_weights</code><span class="sig-paren">(</span><em>fname='cnn'</em>, <em>architecture=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/networks/cnn.html#CNN.save_weights"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.networks.cnn.CNN.save_weights" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves the weights of the networks.</p>
+<p>This method can be call on every instantiation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fname</strong> (<em>str</em>) – Name of the file to save (default: ‘cnn’).</li>
+<li><strong>architecture</strong> (<em>bool</em>) – Architecture flag (default: True). If
+<cite>architecture</cite> is set to True, the architecture the the network
+related to the flag <cite>full</cite> is saved in a JSON format.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This method should not be modified to be adapter to other networks.
+Only the package <cite>models</cite> and the main script should be modified.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="src.networks.generator.html" class="btn btn-neutral float-right" title="src.networks.generator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="src.networks.autoencoder.html" class="btn btn-neutral" title="src.networks.autoencoder" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, PL19n72019
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
