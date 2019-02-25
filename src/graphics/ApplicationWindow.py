@@ -92,7 +92,8 @@ class ApplicationWindow(QMainWindow):
     def __menu_bar(self):
         """Establishment of the front-end and back-end menu bar.
 
-        Classically, the available menus are: File
+        Classically, the available menus are: File.
+        Creation of keybord shortcut for each button.
 
         """
         # menu front-end
@@ -106,19 +107,12 @@ class ApplicationWindow(QMainWindow):
         choose_ts_button.triggered.connect(self.browse_ts)
         file_menu.addAction(choose_ts_button)
 
-        # choose real bathymetry file button action
-        choose_b_button = QAction('Choose real bathymetry file', self)
+        # choose expected bathymetry file button action
+        choose_b_button = QAction('Choose expected bathymetry file', self)
         choose_b_button.setShortcut('Ctrl+B')
-        choose_b_button.setStatusTip('Choose real bathymetry file')
+        choose_b_button.setStatusTip('Choose expected bathymetry file')
         choose_b_button.triggered.connect(self.browse_b)
         file_menu.addAction(choose_b_button)
-
-        # choose weight for prediction
-        choose_w_button = QAction('Choose weight file', self)
-        choose_w_button.setShortcut('Ctrl+W')
-        choose_w_button.setStatusTip('Choose weight file')
-        choose_w_button.triggered.connect(self.browse_m)
-        file_menu.addAction(choose_w_button)
 
         # choose model for prediction
         choose_m_button = QAction('Choose model file', self)
@@ -127,6 +121,15 @@ class ApplicationWindow(QMainWindow):
         choose_m_button.triggered.connect(self.browse_m)
         file_menu.addAction(choose_m_button)
 
+        # start or stop the animation
+        pp_button = QAction('Start/Stop the animation', self)
+        #pp_button.setShortcut('Space')
+        pp_button.setStatusTip('Start/Stop the animation')
+        #pp_button.clicked.connect(self.start_stop)
+        pp_button.triggered.connect(self.start_stop)
+        pp_button.toggle()
+        file_menu.addAction(pp_button)
+        
         # exit button action
         exit_button = QAction('Exit', self)
         exit_button.setShortcut('Ctrl+Q')
@@ -138,17 +141,16 @@ class ApplicationWindow(QMainWindow):
         """Establishment of the front-end and back-end buttons bar.
 
         Classically, the available buttons are:
-                - Exit
                 - Choose timestack file
                 - Choose bathymetry file
-                - Choose weight file
                 - Choose model file
                 - Play/Pause
+                - Exit
 
         """
-        maxw = self.width() - self.__b_width + self.__b_shift  # Max width
-        maxh = self.height() - self.__m_height - self.__b_height  # Max height
-        right_b_width = self.__b_width - self.__b_shift  # Button width
+        maxw = self.width() - self.__b_width + self.__b_shift  		# Max width
+        maxh = self.height() - self.__m_height - self.__b_height  	# Max height
+        right_b_width = self.__b_width - self.__b_shift  			# Button width
 
         # choose timestack file button
         choose_ts_btn = QPushButton('Choose timestack file', self)
@@ -157,9 +159,9 @@ class ApplicationWindow(QMainWindow):
         choose_ts_btn.resize(right_b_width, self.__b_height)
         choose_ts_btn.move(maxw, self.menuBar().height())
 
-        # choose real bathymetry file button
-        choose_b_btn = QPushButton('Choose real bathymetry file', self)
-        choose_b_btn.setToolTip('Choose real bathymetry file')
+        # choose expected bathymetry file button
+        choose_b_btn = QPushButton('Choose expected bathymetry file', self)
+        choose_b_btn.setToolTip('Choose expected bathymetry file')
         choose_b_btn.clicked.connect(self.browse_b)
         choose_b_btn.resize(right_b_width, self.__b_height)
         choose_b_btn.move(maxw, self.menuBar().height() + self.__b_height)
@@ -171,25 +173,16 @@ class ApplicationWindow(QMainWindow):
         choose_m_btn.resize(right_b_width, self.__b_height)
         choose_m_btn.move(maxw, self.menuBar().height() + 2 * self.__b_height)
 
-        # choose model file button
-        # choose_m_combo = QComboBox(self)
-        # choose_m_combo.setToolTip('Choose model file')
-        # for name, obj in inspect.getmembers(cnn):
-        #     if inspect.isclass(obj):
-        #         if name[0:5]=="Model":
-        #             choose_m_combo.addItem(name)
-        # choose_m_combo.activated[str].connect(self.browse_m)
-        # choose_m_combo.resize(right_b_width, self.__b_height)
-        # choose_m_combo.move(maxw, self.menuBar().height() + 3 * self.__b_height)
-
         # play/pause wawe animation from the timestack
         self.pp_pbtn = QPushButton('Start/Stop', self)
         self.pp_pbtn.setToolTip('Start/Stop')
         self.pp_pbtn.setCheckable(True)
         self.pp_pbtn.toggle()
-        self.pp_pbtn.clicked.connect(self.play_pause)
+        self.pp_pbtn.clicked.connect(self.start_stop)
         self.pp_pbtn.resize(right_b_width, self.__b_height)
         self.pp_pbtn.move(maxw, self.menuBar().height() + 4 * self.__b_height)
+        self.pp_pbtn.setShortcut('Space')
+
 
         # close button
         close_btn = QPushButton('Exit', self)
@@ -198,65 +191,114 @@ class ApplicationWindow(QMainWindow):
         close_btn.resize(right_b_width, self.__b_height)
         close_btn.move(maxw, maxh)
 
-    def play_pause(self):
+    def start_stop(self):
+        """Action of the Start/Stop button.
+		
+		Description: start or stop the wawe animation depending on the state of the 
+					 button and update the display in consequence.
+		
+		"""
         self.timer = self.b_canvas.fcqt.new_timer(1, [(self.b_canvas.update_ts, (), {})])
         if self.pp_pbtn.isChecked():
+			# Stop the animation
             self.pp_pbtn.setText('Start')
             self.pp_pbtn.setCheckable(False)
             self.timer.stop()
             self.b_canvas.plot(bath_path=self.bath)
         else:
+			# Start the animation
             self.pp_pbtn.setText('Stop')
             self.pp_pbtn.setCheckable(True)
             self.b_canvas.c_time = time()
             self.timer.start()
 
     def browse_ts(self):
+        """Action of the Choose timestack button.
+		
+		Description: browse the selected timestack file and update the left canvas and wawes 
+					 animation.
+		
+		"""
+		# Get the timestack filename
         filename = QFileDialog.getOpenFileName(None, 'Find Timestack',
                                                '',
                                                '(*.npy)')[0]
         if filename:
+			# Update the ts_canvas and b_canvas
             self.ts = filename
             self.ts_canvas.plot(n_ts=-1, ts_path=self.ts)
             self.b_canvas.ts = np.load(self.ts)
 
     def browse_b(self):
+        """Action of the Choose bathymetry button.
+		
+		Description: browse the selected bathymetry file and update the middle canvas.
+		
+		"""
+		# Get the bathymetry filename
         filename = QFileDialog.getOpenFileName(None, 'Find Bathymetry',
                                                '',
                                                '(*.npy)')[0]
         if filename:
+			# Update the b_canvas
             self.bath = filename
             self.b_canvas.plot(bath_path=self.bath)
 
     def browse_m(self, ae=False):
+        """Action of the Choose model button.
+		
+		Description: browse the selected encoder model and the selected cnn model and then
+					 update the predicted bathymetry in consequence.
+		
+		"""
+		# Get the encoder filename
         encoder_filename = QFileDialog.getOpenFileName(None, 'Find trained encoder',
                                                'src/saves/weights/',
                                                '(*.h5)')[0]
+                                               
+        # Get the encoder model name and version
         encoder_path = encoder_filename.split('.')[0]
         encoder_name = encoder_path.split('/')[-1]
         encoder_version = int(encoder_filename.split('.')[1])
         
+        # Get the cnn model filename
         model_filename = QFileDialog.getOpenFileName(None, 'Find trained model',
                                                'src/saves/weights/',
                                                '(*.h5)')[0]
+                                               
+        # Get the cnn model name and version
         model_path = model_filename.split('.')[0]
         model_name = model_path.split('/')[-1]
         model_version = int(model_filename.split('.')[1])
         
         if encoder_filename and model_filename:
+			# Create the encoder and the cnn
             ae1 = AutoEncoder(load_models=encoder_name, version=encoder_version)
             cnn1 = CNN(load_models=model_name, version=model_version)
 			
-            ts_origi = self.b_canvas.ts[200:]	# croping
+			# Adjust the timestack shape
+            ts_origi = self.b_canvas.ts[200:]	#croping
             width, height = ts_origi.shape
             ts_origi = np.array([ts_origi])
-        
-            ts_enc = ae1.predict(ts_origi.reshape(len(ts_origi), width, height, 1), batch_size=1)
+			
+			# Predict the encoded the timestack (= encode the timestack)
+            ts_enc = ae1.predict(ts_origi.reshape(len(ts_origi), 
+												  width, 
+												  height, 
+												  1), 
+								 batch_size=1)
             a ,width, height = ts_enc.shape
             ts_enc = np.array([ts_enc])
             
-            self.b_canvas.bath_pred = cnn1.predict(ts_enc.reshape(len(ts_enc), width, height, 1), batch_size=1, smooth=True).flatten()
+            # Predict the bathymetry
+            self.b_canvas.bath_pred = cnn1.predict(ts_enc.reshape(len(ts_enc), 
+																  width, 
+																  height, 
+																  1), 
+												   batch_size=1, 
+												   smooth=True).flatten()
             
+            # Update the display
             self.b_canvas.plot(bath_path=self.bath)
 
             
@@ -308,16 +350,16 @@ class TSCanvas(FigureCanvasQTAgg):
     def plot(self, n_ts=-1, ts_path='src/graphics/TS_init.npy'):
         """Drawing of the Hovmöller diagram.
 
-                Args:
-                    n_ts (int): TimeStack time window to display (default: -1).
-                    ts_path (str): Path of the timestack to plot
-                                   (default: 'src/graphics/TS_init.npy').
+        Args:
+			n_ts (int): TimeStack time window to display (default: -1).
+            ts_path (str): Path of the timestack to plot
+				(default: 'src/graphics/TS_init.npy').
 
         """
         self.ax.clear()
         ts_fig = self.ax.imshow(np.load(ts_path)[:n_ts])
         # self.fig.colorbar(ts_fig)
-        self.ax.set_title('TimeStack')
+        self.ax.set_title('TimeStack : ' + ts_path.split('/')[-1].split('.')[0])
         self.draw()
 
 
@@ -347,10 +389,10 @@ class BCanvas(FigureCanvasQTAgg):
             width (int): Width of the canvas (default: 800).
             height (int): Height of the canvas (default: 600).
             dpi (int): Number of pixel per inch of the canvas (default: 100).
-            bath_path (str): Path of the real bathymetry to plot
-                           (default: 'src/graphics/B_init.npy').
+            bath_path (str): Path of the expected bathymetry to plot
+				(default: 'src/graphics/B_init.npy').
             ts_path (str): Path of the timestack to plot
-                           (default: 'src/graphics/TS_init.npy').
+                (default: 'src/graphics/TS_init.npy').
 
         Examples:
             On a pre-defined window.
@@ -369,17 +411,21 @@ class BCanvas(FigureCanvasQTAgg):
                                         QSizePolicy.Expanding)
         FigureCanvasQTAgg.updateGeometry(self)
         self.setParent(parent)
-
-        self.bath = np.load(bath_path)  # bathymetry vector
-        self.bath_pred = np.load(bath_path)  # bathymetry vector
-        self.ts = np.load(ts_path)  # time stack matrix
-        self.n_time = len(self.ts)  # size of time window
-        self.n_wave = len(self.ts[0])  # distance to the horizon
-        self.n_bath = len(self.bath)  # size of the bathymetry grid
+		
+        self.bath_path = bath_path
+        self.bath = np.load(bath_path)  		# bathymetry vector
+        self.bath_pred = np.load(bath_path)  	# bathymetry vector
+        self.ts = np.load(ts_path)  			# timestack matrix
+        self.n_time = len(self.ts)  			# size of time window
+        self.n_wave = len(self.ts[0])  			# distance to the horizon
+        self.n_bath = len(self.bath)  			# size of the bathymetry grid
         
         self.plot()
 
     def update_ts(self):
+        """Drawing of the expected and predict bathymetry and the wawes.
+        
+        """
         wave = self.ts[int(10 * (time()-self.c_time)) % self.n_time]
 
         self.ax.clear()
@@ -399,20 +445,21 @@ class BCanvas(FigureCanvasQTAgg):
         self.ax.figure.canvas.draw()
 
     def plot(self, bath_path='src/graphics/B_init.npy'):
-        """Drawing of the real bathymetry, the expected bathymetry and the wawes
-           dynamically if needed.
-
-                Args:
-                    n_ts (int): TimeStack time window to display (default: -1).
-                    bath_path (str): Path of the real bathymetry
-                                     (default: 'src/graphics/B_init.npy').
+        """Drawing of the expected and predict bathymetry a flat water level.
+        
+        Args:
+			n_ts (int): TimeStack time window to display (default: -1).
+            bath_path (str): Path of the expected bathymetry
+				(default: 'src/graphics/B_init.npy').
 
         """
+        
         self.ax.clear()
+        self.bath_path = bath_path
         self.bath = np.load(bath_path)
-        self.n_time = len(self.ts)  # size of time window
-        self.n_wave = len(self.ts[0])  # distance to the horizon
-        self.n_bath = len(self.bath)  # size of the bathymetry grid
+        self.n_time = len(self.ts)  	# size of time window
+        self.n_wave = len(self.ts[0])  	# distance to the horizon
+        self.n_bath = len(self.bath)  	# size of the bathymetry grid
         self.ax.plot(self.bath, color='xkcd:chocolate', label='Exp. Bath.')
         self.ax.plot(self.bath_pred, '--', color='xkcd:chocolate',
                      label='Pred. Bath.')
@@ -430,6 +477,7 @@ class BCanvas(FigureCanvasQTAgg):
 
     def __infos(self):
         """Creation of the information of the canvas.
+        
         """
         self.ax.set_xlabel(r'Horizon distance $(m)$')
         self.ax.set_ylabel(r'Depth $(m)$')
@@ -437,4 +485,4 @@ class BCanvas(FigureCanvasQTAgg):
         self.ax.set_ylim((np.min(self.bath), np.max(self.ts)))
         self.ax.legend()
         self.ax.grid()
-        self.ax.set_title(r'Expected and Predicted Bathymetry')
+        self.ax.set_title(r'Expected and Predicted Bathymetry : ' + self.bath_path.split('/')[-1].split('.')[0])
