@@ -18,8 +18,8 @@ if __name__ == '__main__':
 
 
     # predict cnn, 20 predict
-    ts_names = sorted(glob.glob('../dataset/test_TS/*.npy'))
-    bathy_names = sorted(glob.glob('../dataset/test_GT/*.npy'))
+    ts_names = sorted(glob.glob('../dataset/train_TS/*.npy'))
+    bathy_names = sorted(glob.glob('../dataset/train_GT/*.npy'))
     print(len(ts_names))
     print(len(bathy_names))
     for i in range(20):
