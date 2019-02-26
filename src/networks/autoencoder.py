@@ -43,14 +43,16 @@ class AutoEncoder:
 
         Args:
             model: Model of auto-encoder (should be created in the package
-                `models`).
+                `models`) (default: None). Set it to None if you're loading an
+                existing model.
             dataset_path (str): Path to the dataset (default: None). If it is
-                set to None, the current path is selected.
-            batch_size (int): Size of the batch.
+                set to None, the current path is selected. Note that you need to
+                point toward a dataset folder as described in the maintenance section
+                of the documentation.
+            batch_size (int): Size of the batch (default: 128).
             load_models (str): Model to load (default: None). If it is set to
-                None, no model if load. If not, it should contain a encoder
-                name, and only its should be used (useful to pre-process the
-                data before the input of a next neural network).
+                None, no model is loaded. In that case model should not be set
+                at None.
             version (int): Version of encoder to load (default: 0). If
                 load_models is not None, it refers to the version of encoder to
                 load. By default, it load the first model created by the outer-
@@ -215,9 +217,9 @@ class AutoEncoder:
         """Generate an encoded data from a timestack data.
 
         Be aware of the fact that your data needs to have the same
-        dimension that the one required by the model. If you want this
-        encoded data to be used for the training of our CNN model, we
-        advise you to put it in a folder named 'train_encoded_TS'.
+        dimension that the one required by the model. Be aware of the
+        fact that your different path have to point toward a dataset folder
+        as defined in maintenance section of the documentation.
 
         Args:
             data_in (str): Path to the data to encode (put '.' if you want

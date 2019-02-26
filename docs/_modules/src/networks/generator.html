@@ -171,14 +171,19 @@
 <div class="viewcode-block" id="GeneratorAutoencoder"><a class="viewcode-back" href="../../../api/src.networks.generator.html#src.networks.generator.GeneratorAutoencoder">[docs]</a><span class="k">class</span> <span class="nc">GeneratorAutoencoder</span><span class="p">(</span><span class="n">Sequence</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Manages the batched data during the fitting. This class is adapted to</span>
 <span class="sd">    the autoencoder network and load the data batch per batch to avoid</span>
-<span class="sd">    memory filling.</span>
-
-<span class="sd">    Attributes:</span>
-<span class="sd">        timestacks: List of all the timestack file names.</span>
-<span class="sd">        batch_size: Size of the batch.</span>
+<span class="sd">    memory filling. It is absolutely necessary to work with a generator if</span>
+<span class="sd">    you want to fit the autoencoder on a big size data.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="GeneratorAutoencoder.__init__"><a class="viewcode-back" href="../../../api/src.networks.generator.html#src.networks.generator.GeneratorAutoencoder.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts_names</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the object with the names of all the timstack</span>
+<span class="sd">        files to process. It will rely on them to load their contents</span>
+<span class="sd">        batch per batch.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ts_names (list(str)): The list of the timestack files.</span>
+<span class="sd">            batch_size (int): Size of the batch.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timestacks</span> <span class="o">=</span> <span class="n">ts_names</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span></div>
 
@@ -193,7 +198,8 @@
 
     <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Uses the names of the timestack files to load `batch_size` ones.</span>
-<span class="sd">        This function is inherited from Sequence.</span>
+<span class="sd">        This function is inherited from Sequence. All the pre-processing (croping, </span>
+<span class="sd">        reshaping, etc) needed is done here.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            idx (int): The number of the batch to load in memory.</span>
@@ -213,15 +219,21 @@
 
 <div class="viewcode-block" id="GeneratorCNN"><a class="viewcode-back" href="../../../api/src.networks.generator.html#src.networks.generator.GeneratorCNN">[docs]</a><span class="k">class</span> <span class="nc">GeneratorCNN</span><span class="p">(</span><span class="n">Sequence</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Manages the batched data during the fitting. This class is adapted to</span>
-<span class="sd">    the CNN network and load the data batch per batch to avoid memory filling.</span>
-
-<span class="sd">    Attributes:</span>
-<span class="sd">        timestacks: List of all the timestack file names.</span>
-<span class="sd">        bathy: List of all the bathymetry file names.</span>
-<span class="sd">        batch_size: Size of the batch.</span>
+<span class="sd">    the cnn network and load the data batch per batch to avoid memory filling.</span>
+<span class="sd">    It is absolutely necessary to work with a generator if</span>
+<span class="sd">    you want to fit the autoencoder on a big size data.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="GeneratorCNN.__init__"><a class="viewcode-back" href="../../../api/src.networks.generator.html#src.networks.generator.GeneratorCNN.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts_names</span><span class="p">,</span> <span class="n">b_names</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the object with the names of all the timstack and </span>
+<span class="sd">        bathymetry files to process. It will rely on them to load their</span>
+<span class="sd">        contents batch per batch.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ts_names (list(str)): The list of the timestack files.</span>
+<span class="sd">            b_names (list(str)): The list of the bathymetry files.</span>
+<span class="sd">            batch_size (int): Size of the batch.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timestacks</span> <span class="o">=</span> <span class="n">ts_names</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bathy</span> <span class="o">=</span> <span class="n">b_names</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span></div>
@@ -236,8 +248,9 @@
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timestacks</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)))</span>
 
     <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Uses the names of the timestack and bathymetry files to load</span>
-<span class="sd">        `batch_size` ones. This function is inherited from Sequence.</span>
+        <span class="sd">&quot;&quot;&quot;Uses the names of the timestack and bathymetry files to load `batch_size` ones.</span>
+<span class="sd">        This function is inherited from Sequence. All the pre-processing (croping, </span>
+<span class="sd">        reshaping, etc) needed is done here.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            idx (int): The number of the batch to load in memory.</span>

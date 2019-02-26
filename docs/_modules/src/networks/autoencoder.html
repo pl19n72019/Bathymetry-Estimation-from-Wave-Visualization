@@ -194,14 +194,16 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            model: Model of auto-encoder (should be created in the package</span>
-<span class="sd">                `models`).</span>
+<span class="sd">                `models`) (default: None). Set it to None if you&#39;re loading an</span>
+<span class="sd">                existing model.</span>
 <span class="sd">            dataset_path (str): Path to the dataset (default: None). If it is</span>
-<span class="sd">                set to None, the current path is selected.</span>
-<span class="sd">            batch_size (int): Size of the batch.</span>
+<span class="sd">                set to None, the current path is selected. Note that you need to</span>
+<span class="sd">                point toward a dataset folder as described in the maintenance section</span>
+<span class="sd">                of the documentation.</span>
+<span class="sd">            batch_size (int): Size of the batch (default: 128).</span>
 <span class="sd">            load_models (str): Model to load (default: None). If it is set to</span>
-<span class="sd">                None, no model if load. If not, it should contain a encoder</span>
-<span class="sd">                name, and only its should be used (useful to pre-process the</span>
-<span class="sd">                data before the input of a next neural network).</span>
+<span class="sd">                None, no model is loaded. In that case model should not be set</span>
+<span class="sd">                at None.</span>
 <span class="sd">            version (int): Version of encoder to load (default: 0). If</span>
 <span class="sd">                load_models is not None, it refers to the version of encoder to</span>
 <span class="sd">                load. By default, it load the first model created by the outer-</span>
@@ -366,9 +368,9 @@
         <span class="sd">&quot;&quot;&quot;Generate an encoded data from a timestack data.</span>
 
 <span class="sd">        Be aware of the fact that your data needs to have the same</span>
-<span class="sd">        dimension that the one required by the model. If you want this</span>
-<span class="sd">        encoded data to be used for the training of our CNN model, we</span>
-<span class="sd">        advise you to put it in a folder named &#39;train_encoded_TS&#39;.</span>
+<span class="sd">        dimension that the one required by the model. Be aware of the</span>
+<span class="sd">        fact that your different path have to point toward a dataset folder</span>
+<span class="sd">        as defined in maintenance section of the documentation.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            data_in (str): Path to the data to encode (put &#39;.&#39; if you want</span>

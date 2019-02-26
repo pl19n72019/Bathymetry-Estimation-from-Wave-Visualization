@@ -169,23 +169,26 @@ batch.</p>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">keras.utils.data_utils.Sequence</span></code></p>
 <p>Manages the batched data during the fitting. This class is adapted to
 the autoencoder network and load the data batch per batch to avoid
-memory filling.</p>
-<dl class="attribute">
-<dt id="src.networks.generator.GeneratorAutoencoder.timestacks">
-<code class="descname">timestacks</code><a class="headerlink" href="#src.networks.generator.GeneratorAutoencoder.timestacks" title="Permalink to this definition">¶</a></dt>
-<dd><p>List of all the timestack file names.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="src.networks.generator.GeneratorAutoencoder.batch_size">
-<code class="descname">batch_size</code><a class="headerlink" href="#src.networks.generator.GeneratorAutoencoder.batch_size" title="Permalink to this definition">¶</a></dt>
-<dd><p>Size of the batch.</p>
-</dd></dl>
-
+memory filling. It is absolutely necessary to work with a generator if
+you want to fit the autoencoder on a big size data.</p>
 <dl class="method">
 <dt id="src.networks.generator.GeneratorAutoencoder.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>ts_names</em>, <em>batch_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/networks/generator.html#GeneratorAutoencoder.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.networks.generator.GeneratorAutoencoder.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+<dd><p>Initialize the object with the names of all the timstack
+files to process. It will rely on them to load their contents
+batch per batch.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ts_names</strong> (<em>list</em><em>(</em><em>str</em><em>)</em>) – The list of the timestack files.</li>
+<li><strong>batch_size</strong> (<em>int</em>) – Size of the batch.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -195,29 +198,28 @@ memory filling.</p>
 <em class="property">class </em><code class="descclassname">src.networks.generator.</code><code class="descname">GeneratorCNN</code><span class="sig-paren">(</span><em>ts_names</em>, <em>b_names</em>, <em>batch_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/networks/generator.html#GeneratorCNN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.networks.generator.GeneratorCNN" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">keras.utils.data_utils.Sequence</span></code></p>
 <p>Manages the batched data during the fitting. This class is adapted to
-the CNN network and load the data batch per batch to avoid memory filling.</p>
-<dl class="attribute">
-<dt id="src.networks.generator.GeneratorCNN.timestacks">
-<code class="descname">timestacks</code><a class="headerlink" href="#src.networks.generator.GeneratorCNN.timestacks" title="Permalink to this definition">¶</a></dt>
-<dd><p>List of all the timestack file names.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="src.networks.generator.GeneratorCNN.bathy">
-<code class="descname">bathy</code><a class="headerlink" href="#src.networks.generator.GeneratorCNN.bathy" title="Permalink to this definition">¶</a></dt>
-<dd><p>List of all the bathymetry file names.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="src.networks.generator.GeneratorCNN.batch_size">
-<code class="descname">batch_size</code><a class="headerlink" href="#src.networks.generator.GeneratorCNN.batch_size" title="Permalink to this definition">¶</a></dt>
-<dd><p>Size of the batch.</p>
-</dd></dl>
-
+the cnn network and load the data batch per batch to avoid memory filling.
+It is absolutely necessary to work with a generator if
+you want to fit the autoencoder on a big size data.</p>
 <dl class="method">
 <dt id="src.networks.generator.GeneratorCNN.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>ts_names</em>, <em>b_names</em>, <em>batch_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/networks/generator.html#GeneratorCNN.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.networks.generator.GeneratorCNN.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+<dd><p>Initialize the object with the names of all the timstack and
+bathymetry files to process. It will rely on them to load their
+contents batch per batch.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ts_names</strong> (<em>list</em><em>(</em><em>str</em><em>)</em>) – The list of the timestack files.</li>
+<li><strong>b_names</strong> (<em>list</em><em>(</em><em>str</em><em>)</em>) – The list of the bathymetry files.</li>
+<li><strong>batch_size</strong> (<em>int</em>) – Size of the batch.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>

@@ -168,7 +168,7 @@ init, train, load, and save cnn models.</p>
 <em class="property">class </em><code class="descclassname">src.networks.cnn.</code><code class="descname">CNN</code><span class="sig-paren">(</span><em>model=None</em>, <em>dataset_path=None</em>, <em>batch_size=128</em>, <em>load_models=None</em>, <em>version=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/networks/cnn.html#CNN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.networks.cnn.CNN" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Global functionalities of the convolutional neural networks.</p>
-<p>This class  allows to train convolutional network network (define in the
+<p>This class  allows to train convolutional network (define in the
 package <cite>models</cite>), and to perform all classic operations on the neural
 networks.</p>
 <dl class="method">
@@ -180,21 +180,25 @@ data are used for the training phase. The other 20% are use to validate
 the model during the fitting phase. Moreover, the shape of the data
 (train and test) are fitting to run on 2-dimensional convolutional
 neural network (which offers the best results). If other network are
-used, reshape the data at the input of the network.</p>
+used, reshape the data at the input of the network. A generator
+approach is used for loading the data, which means that the data is
+loaded batch per batch.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>model</strong> – Model of auto-encoder (should be created in the package
-<cite>models</cite>).</li>
+<li><strong>model</strong> – Model of cnn (should be created in the package
+<cite>models</cite>) (default: None). Set it to None if you’re loading
+an existing model.</li>
 <li><strong>dataset_path</strong> (<em>str</em>) – Path to the dataset (default: None). If it is
-set to None, the current path is selected.</li>
-<li><strong>batch_size</strong> (<em>int</em>) – Size of the batch.</li>
+set to None, the current path is selected. Note that you need
+to point toward a dataset folder as described in the maintenance
+section of the documentation.</li>
+<li><strong>batch_size</strong> (<em>int</em>) – Size of the batch (default: 128).</li>
 <li><strong>load_models</strong> (<em>str</em>) – Model to load (default: None). If it is set to
-None, no model is loaded. If not, it should contain an encoder
-name, and only its should be used (useful to pre-process the
-data bedore the input of a next neural network).</li>
+None, no model is loaded. In that case model shoul not be set
+at None.</li>
 <li><strong>version</strong> (<em>int</em>) – Version of encoder to load (default: 0). If
 load_models is not None, it refers to the version of encoder to
 load. By default, it loads the first model created by the

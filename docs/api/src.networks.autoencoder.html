@@ -189,14 +189,16 @@ loaded batch per batch.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>model</strong> – Model of auto-encoder (should be created in the package
-<cite>models</cite>).</li>
+<cite>models</cite>) (default: None). Set it to None if you’re loading an
+existing model.</li>
 <li><strong>dataset_path</strong> (<em>str</em>) – Path to the dataset (default: None). If it is
-set to None, the current path is selected.</li>
-<li><strong>batch_size</strong> (<em>int</em>) – Size of the batch.</li>
+set to None, the current path is selected. Note that you need to
+point toward a dataset folder as described in the maintenance section
+of the documentation.</li>
+<li><strong>batch_size</strong> (<em>int</em>) – Size of the batch (default: 128).</li>
 <li><strong>load_models</strong> (<em>str</em>) – Model to load (default: None). If it is set to
-None, no model if load. If not, it should contain a encoder
-name, and only its should be used (useful to pre-process the
-data before the input of a next neural network).</li>
+None, no model is loaded. In that case model should not be set
+at None.</li>
 <li><strong>version</strong> (<em>int</em>) – Version of encoder to load (default: 0). If
 load_models is not None, it refers to the version of encoder to
 load. By default, it load the first model created by the outer-
@@ -277,9 +279,9 @@ Only the package <cite>models</cite> and the main script should be modified.</p>
 <code class="descname">encode_dataset</code><span class="sig-paren">(</span><em>data_in</em>, <em>data_out</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/networks/autoencoder.html#AutoEncoder.encode_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.networks.autoencoder.AutoEncoder.encode_dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate an encoded data from a timestack data.</p>
 <p>Be aware of the fact that your data needs to have the same
-dimension that the one required by the model. If you want this
-encoded data to be used for the training of our CNN model, we
-advise you to put it in a folder named ‘train_encoded_TS’.</p>
+dimension that the one required by the model. Be aware of the
+fact that your different path have to point toward a dataset folder
+as defined in maintenance section of the documentation.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />

@@ -89,6 +89,10 @@
 <li class="toctree-l2"><a class="reference internal" href="#install-the-environment">Install the environment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#edit-the-documentation">Edit the documentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#contribute-to-the-project">Contribute to the project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#use-a-dataset">Use a dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#generated-models">Generated models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#write-your-own-code">Write your own code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#gui">GUI</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html"> API</a></li>
@@ -189,9 +193,52 @@ your own module, please put a <code class="docutils literal notranslate"><span c
 to the <code class="docutils literal notranslate"><span class="pre">src</span></code>. The <code class="docutils literal notranslate"><span class="pre">bin</span></code> and the <code class="docutils literal notranslate"><span class="pre">tests</span></code> folders contains all the scripts.
 If you want to build such a script, don’t forget to put the global PATH at the
 root of the project by typing <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">context</span></code> at the head of your file to
-have access to the <code class="docutils literal notranslate"><span class="pre">src</span></code> packages or the <code class="docutils literal notranslate"><span class="pre">data</span></code> for example. I inform you
+have access to the <code class="docutils literal notranslate"><span class="pre">src</span></code> packages or the <code class="docutils literal notranslate"><span class="pre">dataset</span></code> for example. I inform you
 that the commenting of your code will be hardly judged and validated by myself
 :p</p>
+</div>
+<div class="section" id="use-a-dataset">
+<h2>Use a dataset<a class="headerlink" href="#use-a-dataset" title="Permalink to this headline">¶</a></h2>
+<p>At this stage of the project, you should give a path to the dataset to be
+computed, this path should contains a folder named <code class="docutils literal notranslate"><span class="pre">dataset</span></code> with:
+- <code class="docutils literal notranslate"><span class="pre">train_TS</span></code>: contains the timestacks (<span class="math notranslate nohighlight">\(600\times200\)</span> in our case).
+- <code class="docutils literal notranslate"><span class="pre">train_encoded_TS</span></code>: contains the encoded timestacks (<span class="math notranslate nohighlight">\(100\times200\)</span> in our case).
+- <code class="docutils literal notranslate"><span class="pre">train_GT</span></code>: contains the bathymetries.</p>
+<p>These names are hard-coded in our modules, if you don’t fit this architecture,
+it will certainly crash.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">For our study case, this architecture was appropriate, but we are aware of
+the facti that it is not yet super flexible. For example, you may not need encoded
+data or other stuff, that’s why we invite you to improve it and change the
+code if needed.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">An example of dataset is already provided in the github repo.</p>
+</div>
+</div>
+<div class="section" id="generated-models">
+<h2>Generated models<a class="headerlink" href="#generated-models" title="Permalink to this headline">¶</a></h2>
+<p>You may have noticed that the repo contains a folder named <code class="docutils literal notranslate"><span class="pre">saves</span></code>, in that
+folder we’re saving our models, weights, and losses. Normally the architecture
+of the models and the weights are automatically saved in the <code class="docutils literal notranslate"><span class="pre">fit</span></code> functions.
+Actually the weights are saved at the end of each repeat of the <code class="docutils literal notranslate"><span class="pre">fit</span></code>, in that
+way you’re able to regenerate a model at different stage of the fitting. You need
+to call save <code class="docutils literal notranslate"><span class="pre">save_losses</span></code> at the end of the fit if you want to record the losses.</p>
+</div>
+<div class="section" id="write-your-own-code">
+<h2>Write your own code<a class="headerlink" href="#write-your-own-code" title="Permalink to this headline">¶</a></h2>
+<p>We provide few examples of use case in the <code class="docutils literal notranslate"><span class="pre">bin</span></code> folder. They are technically ready to
+work on the little dataset provided. You can find the API of the useful modules in this
+documentation and create your own script to manipulate easily the learning on this
+timestack problem.</p>
+</div>
+<div class="section" id="gui">
+<h2>GUI<a class="headerlink" href="#gui" title="Permalink to this headline">¶</a></h2>
+<p>This project also contains a GUI that you can launch with the script <code class="docutils literal notranslate"><span class="pre">bin/window.py</span></code>.
+This interface take a real timestack, its bathymetry, an encoder and a cnn model to
+print the estimated bathymetry with the models selected.</p>
 </div>
 </div>
 

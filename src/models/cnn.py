@@ -97,7 +97,7 @@ class Model2:
     have originally two dimensions, the timestack size. The size of the output
     is the number of points in the discretization of the domain.
 
-    The model is composed of three convolutional layers, followed by a fully-
+    The model is composed of eight convolutional layers, followed by a fully-
     connected layer (a hidden flatten layer is required to link both).
 
     Examples:
@@ -130,7 +130,7 @@ class Model2:
     def __set_model(self, input_shape, output_size):
         """Creation of all the layers of the network.
 
-        The model is composed of three convolutional layers, followed by a
+        The model is composed of eight convolutional layers, followed by a
         fully-connected layer (a hidden flatten layer is required to link both).
 
         Args:

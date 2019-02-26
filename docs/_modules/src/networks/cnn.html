@@ -178,7 +178,7 @@
 <div class="viewcode-block" id="CNN"><a class="viewcode-back" href="../../../api/src.networks.cnn.html#src.networks.cnn.CNN">[docs]</a><span class="k">class</span> <span class="nc">CNN</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Global functionalities of the convolutional neural networks.</span>
 
-<span class="sd">    This class  allows to train convolutional network network (define in the</span>
+<span class="sd">    This class  allows to train convolutional network (define in the</span>
 <span class="sd">    package `models`), and to perform all classic operations on the neural</span>
 <span class="sd">    networks.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -192,18 +192,22 @@
 <span class="sd">        the model during the fitting phase. Moreover, the shape of the data</span>
 <span class="sd">        (train and test) are fitting to run on 2-dimensional convolutional</span>
 <span class="sd">        neural network (which offers the best results). If other network are</span>
-<span class="sd">        used, reshape the data at the input of the network.</span>
+<span class="sd">        used, reshape the data at the input of the network. A generator </span>
+<span class="sd">        approach is used for loading the data, which means that the data is</span>
+<span class="sd">        loaded batch per batch.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            model: Model of auto-encoder (should be created in the package</span>
-<span class="sd">                `models`).</span>
+<span class="sd">            model: Model of cnn (should be created in the package</span>
+<span class="sd">                `models`) (default: None). Set it to None if you&#39;re loading</span>
+<span class="sd">                an existing model.</span>
 <span class="sd">            dataset_path (str): Path to the dataset (default: None). If it is</span>
-<span class="sd">                set to None, the current path is selected.</span>
-<span class="sd">            batch_size (int): Size of the batch.</span>
+<span class="sd">                set to None, the current path is selected. Note that you need</span>
+<span class="sd">                to point toward a dataset folder as described in the maintenance</span>
+<span class="sd">                section of the documentation.</span>
+<span class="sd">            batch_size (int): Size of the batch (default: 128).</span>
 <span class="sd">            load_models (str): Model to load (default: None). If it is set to</span>
-<span class="sd">                None, no model is loaded. If not, it should contain an encoder</span>
-<span class="sd">                name, and only its should be used (useful to pre-process the</span>
-<span class="sd">                data bedore the input of a next neural network).</span>
+<span class="sd">                None, no model is loaded. In that case model shoul not be set</span>
+<span class="sd">                at None.</span>
 <span class="sd">            version (int): Version of encoder to load (default: 0). If</span>
 <span class="sd">                load_models is not None, it refers to the version of encoder to</span>
 <span class="sd">                load. By default, it loads the first model created by the</span>

@@ -27,7 +27,7 @@ from src.networks.generator import GeneratorCNN
 class CNN:
     """Global functionalities of the convolutional neural networks.
 
-    This class  allows to train convolutional network network (define in the
+    This class  allows to train convolutional network (define in the
     package `models`), and to perform all classic operations on the neural
     networks.
     """
@@ -41,18 +41,22 @@ class CNN:
         the model during the fitting phase. Moreover, the shape of the data
         (train and test) are fitting to run on 2-dimensional convolutional
         neural network (which offers the best results). If other network are
-        used, reshape the data at the input of the network.
+        used, reshape the data at the input of the network. A generator 
+        approach is used for loading the data, which means that the data is
+        loaded batch per batch.
 
         Args:
-            model: Model of auto-encoder (should be created in the package
-                `models`).
+            model: Model of cnn (should be created in the package
+                `models`) (default: None). Set it to None if you're loading
+                an existing model.
             dataset_path (str): Path to the dataset (default: None). If it is
-                set to None, the current path is selected.
-            batch_size (int): Size of the batch.
+                set to None, the current path is selected. Note that you need
+                to point toward a dataset folder as described in the maintenance
+                section of the documentation.
+            batch_size (int): Size of the batch (default: 128).
             load_models (str): Model to load (default: None). If it is set to
-                None, no model is loaded. If not, it should contain an encoder
-                name, and only its should be used (useful to pre-process the
-                data bedore the input of a next neural network).
+                None, no model is loaded. In that case model shoul not be set
+                at None.
             version (int): Version of encoder to load (default: 0). If
                 load_models is not None, it refers to the version of encoder to
                 load. By default, it loads the first model created by the

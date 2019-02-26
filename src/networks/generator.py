@@ -20,14 +20,19 @@ from skimage.transform import resize
 class GeneratorAutoencoder(Sequence):
     """Manages the batched data during the fitting. This class is adapted to
     the autoencoder network and load the data batch per batch to avoid
-    memory filling.
-
-    Attributes:
-        timestacks: List of all the timestack file names.
-        batch_size: Size of the batch.
+    memory filling. It is absolutely necessary to work with a generator if
+    you want to fit the autoencoder on a big size data.
     """
 
     def __init__(self, ts_names, batch_size):
+        """Initialize the object with the names of all the timstack
+        files to process. It will rely on them to load their contents
+        batch per batch.
+
+        Args:
+            ts_names (list(str)): The list of the timestack files.
+            batch_size (int): Size of the batch.
+        """
         self.timestacks = ts_names
         self.batch_size = batch_size
 
@@ -42,7 +47,8 @@ class GeneratorAutoencoder(Sequence):
 
     def __getitem__(self, idx):
         """Uses the names of the timestack files to load `batch_size` ones.
-        This function is inherited from Sequence.
+        This function is inherited from Sequence. All the pre-processing (croping, 
+        reshaping, etc) needed is done here.
 
         Args:
             idx (int): The number of the batch to load in memory.
@@ -62,15 +68,21 @@ class GeneratorAutoencoder(Sequence):
 
 class GeneratorCNN(Sequence):
     """Manages the batched data during the fitting. This class is adapted to
-    the CNN network and load the data batch per batch to avoid memory filling.
-
-    Attributes:
-        timestacks: List of all the timestack file names.
-        bathy: List of all the bathymetry file names.
-        batch_size: Size of the batch.
+    the cnn network and load the data batch per batch to avoid memory filling.
+    It is absolutely necessary to work with a generator if
+    you want to fit the autoencoder on a big size data.
     """
 
     def __init__(self, ts_names, b_names, batch_size):
+        """Initialize the object with the names of all the timstack and 
+        bathymetry files to process. It will rely on them to load their
+        contents batch per batch.
+
+        Args:
+            ts_names (list(str)): The list of the timestack files.
+            b_names (list(str)): The list of the bathymetry files.
+            batch_size (int): Size of the batch.
+        """
         self.timestacks = ts_names
         self.bathy = b_names
         self.batch_size = batch_size
@@ -85,8 +97,9 @@ class GeneratorCNN(Sequence):
         return int(np.ceil(len(self.timestacks) / float(self.batch_size)))
 
     def __getitem__(self, idx):
-        """Uses the names of the timestack and bathymetry files to load
-        `batch_size` ones. This function is inherited from Sequence.
+        """Uses the names of the timestack and bathymetry files to load `batch_size` ones.
+        This function is inherited from Sequence. All the pre-processing (croping, 
+        reshaping, etc) needed is done here.
 
         Args:
             idx (int): The number of the batch to load in memory.

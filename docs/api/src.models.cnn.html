@@ -223,6 +223,67 @@ method.</p>
 
 </dd></dl>
 
+<dl class="class">
+<dt id="src.models.cnn.Model2">
+<em class="property">class </em><code class="descclassname">src.models.cnn.</code><code class="descname">Model2</code><span class="sig-paren">(</span><em>input_shape</em>, <em>output_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/models/cnn.html#Model2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.models.cnn.Model2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A second, deeper CNN model.</p>
+<p>The model is a convolutional model, adapted to the problem. The inputs
+have originally two dimensions, the timestack size. The size of the output
+is the number of points in the discretization of the domain.</p>
+<p>The model is composed of eight convolutional layers, followed by a fully-
+connected layer (a hidden flatten layer is required to link both).</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cnn</span> <span class="o">=</span> <span class="n">Model2</span><span class="p">((</span><span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">200</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">cnn</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">summary</span><span class="p">())</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="src.models.cnn.Model2.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>input_shape</em>, <em>output_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/models/cnn.html#Model2.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.models.cnn.Model2.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creation of a first CNN model.</p>
+<p>The model is a convolutional model, adapted to the problem. The inputs
+have originally two dimensions, the timestack size. The size of the
+output is the number of points in the discretization of the domain.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>input_shape</strong> (<em>tuple</em>) – Input shape of the model, typically (_, _, 1).</li>
+<li><strong>output_size</strong> (<em>int</em>) – Output size of the model (discretization of the
+domain).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The model can be used as a template. The headers and the
+specifications need to be fulfilled.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.models.cnn.Model2.model">
+<code class="descname">model</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/models/cnn.html#Model2.model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.models.cnn.Model2.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model in the keras format.</p>
+<p>After calling this method, all the keras functions that can be applied
+on a model (compile, fit, …) can be called on the output of this
+method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The model in the keras format.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 

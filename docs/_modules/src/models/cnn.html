@@ -221,13 +221,97 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__cnn</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__cnn</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">MaxPooling2D</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
 
-        <span class="c1"># self.__cnn.add(Conv2D(128, (3, 3), activation=&#39;relu&#39;, padding=&#39;same&#39;))</span>
-        <span class="c1"># self.__cnn.add(MaxPooling2D((2, 2)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cnn</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cnn</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">MaxPooling2D</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">__cnn</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Flatten</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__cnn</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">output_size</span><span class="p">))</span>
 
 <div class="viewcode-block" id="Model1.model"><a class="viewcode-back" href="../../../api/src.models.cnn.html#src.models.cnn.Model1.model">[docs]</a>    <span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Model in the keras format.</span>
+
+<span class="sd">        After calling this method, all the keras functions that can be applied</span>
+<span class="sd">        on a model (compile, fit, ...) can be called on the output of this</span>
+<span class="sd">        method.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The model in the keras format.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cnn</span></div></div>
+
+
+
+<div class="viewcode-block" id="Model2"><a class="viewcode-back" href="../../../api/src.models.cnn.html#src.models.cnn.Model2">[docs]</a><span class="k">class</span> <span class="nc">Model2</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;A second, deeper CNN model.</span>
+
+<span class="sd">    The model is a convolutional model, adapted to the problem. The inputs</span>
+<span class="sd">    have originally two dimensions, the timestack size. The size of the output</span>
+<span class="sd">    is the number of points in the discretization of the domain.</span>
+
+<span class="sd">    The model is composed of eight convolutional layers, followed by a fully-</span>
+<span class="sd">    connected layer (a hidden flatten layer is required to link both).</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">        &gt;&gt;&gt; cnn = Model2((50, 100, 1), 200)</span>
+<span class="sd">        &gt;&gt;&gt; print(cnn.model().summary())</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Model2.__init__"><a class="viewcode-back" href="../../../api/src.models.cnn.html#src.models.cnn.Model2.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">,</span> <span class="n">output_size</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Creation of a first CNN model.</span>
+
+<span class="sd">        The model is a convolutional model, adapted to the problem. The inputs</span>
+<span class="sd">        have originally two dimensions, the timestack size. The size of the</span>
+<span class="sd">        output is the number of points in the discretization of the domain.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            input_shape (tuple): Input shape of the model, typically (_, _, 1).</span>
+<span class="sd">            output_size (int): Output size of the model (discretization of the</span>
+<span class="sd">                domain).</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            The model can be used as a template. The headers and the</span>
+<span class="sd">            specifications need to be fulfilled.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cnn</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;DCNN&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_model</span><span class="p">(</span><span class="n">input_shape</span><span class="p">,</span> <span class="n">output_size</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__set_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">,</span> <span class="n">output_size</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Creation of all the layers of the network.</span>
+
+<span class="sd">        The model is composed of eight convolutional layers, followed by a</span>
+<span class="sd">        fully-connected layer (a hidden flatten layer is required to link both).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            input_shape (tuple): Input shape of the model, typically (_, _, 1).</span>
+<span class="sd">            output_size (int): Output size of the model (discretization of the</span>
+<span class="sd">                domain).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cnn</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">,</span>
+                              <span class="n">input_shape</span><span class="o">=</span><span class="n">input_shape</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cnn</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cnn</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">MaxPooling2D</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cnn</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cnn</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cnn</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">MaxPooling2D</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cnn</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cnn</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cnn</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">MaxPooling2D</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cnn</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cnn</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cnn</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">MaxPooling2D</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cnn</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Flatten</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cnn</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">300</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cnn</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">output_size</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Model2.model"><a class="viewcode-back" href="../../../api/src.models.cnn.html#src.models.cnn.Model2.model">[docs]</a>    <span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Model in the keras format.</span>
 
 <span class="sd">        After calling this method, all the keras functions that can be applied</span>
