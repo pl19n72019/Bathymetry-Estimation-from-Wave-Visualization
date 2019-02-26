@@ -18,11 +18,11 @@ if __name__ == '__main__':
 
 
     # predict cnn, 20 predict
-    ts_names = sorted(glob.glob('../dataset/test_TS/*.npy'))
-    bathy_names = sorted(glob.glob('../dataset/test_GT/*.npy'))
+    ts_names = sorted(glob.glob('dataset/train_TS/*.npy'))
+    bathy_names = sorted(glob.glob('dataset/train_GT/*.npy'))
     print(len(ts_names))
     print(len(bathy_names))
-    for i in range(20):
+    for i in range(10):
         plt.subplot(4, 5, i + 1)
         
         ts_origi = np.load(ts_names[i])[200:]	# croping
