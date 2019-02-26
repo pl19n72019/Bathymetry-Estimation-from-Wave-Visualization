@@ -44,3 +44,7 @@ that the commenting of your code will be hardly judged and validated by myself
 :p
 
 
+Use a dataset
+-------------
+
+At this stage of the project, each
