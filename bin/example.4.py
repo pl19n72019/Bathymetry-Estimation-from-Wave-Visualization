@@ -14,7 +14,7 @@ if __name__ == '__main__':
 
 
     # predict cnn
-    ts_enc = np.load('../dataset/train_encoded_TS/TS_00001.npy')
+    ts_enc = np.load('dataset/train_encoded_TS/TS_00001.npy')
     width, height = ts_enc.shape
     ts_enc = np.array([ts_enc])
     bathy = cnn1.predict(ts_enc.reshape(len(ts_enc), width, height, 1), batch_size=1)

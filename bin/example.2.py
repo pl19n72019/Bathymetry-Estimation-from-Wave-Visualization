@@ -15,7 +15,7 @@ if __name__ == '__main__':
 
 
     # predict encoder
-    ts_origi = np.load('../dataset/train_TS/TS_00001.npy')[200:] # adapt you path
+    ts_origi = np.load('dataset/train_TS/TS_00001.npy')[200:] # adapt you path
     width, height = ts_origi.shape
     ts_origi = np.array([ts_origi])
     ts_enc = ae1.predict(ts_origi.reshape(len(ts_origi), width, height, 1), batch_size=1)
