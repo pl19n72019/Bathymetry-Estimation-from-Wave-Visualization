@@ -120,15 +120,6 @@ class ApplicationWindow(QMainWindow):
         choose_m_button.setStatusTip('Choose model file')
         choose_m_button.triggered.connect(self.browse_m)
         file_menu.addAction(choose_m_button)
-
-        # start or stop the animation
-        pp_button = QAction('Start/Stop the animation', self)
-        #pp_button.setShortcut('Space')
-        pp_button.setStatusTip('Start/Stop the animation')
-        #pp_button.clicked.connect(self.start_stop)
-        pp_button.triggered.connect(self.start_stop)
-        pp_button.toggle()
-        file_menu.addAction(pp_button)
         
         # exit button action
         exit_button = QAction('Exit', self)
@@ -153,25 +144,25 @@ class ApplicationWindow(QMainWindow):
         right_b_width = self.__b_width - self.__b_shift  			# Button width
 
         # choose timestack file button
-        choose_ts_btn = QPushButton('Choose timestack file', self)
-        choose_ts_btn.setToolTip('Choose timestack file')
-        choose_ts_btn.clicked.connect(self.browse_ts)
-        choose_ts_btn.resize(right_b_width, self.__b_height)
-        choose_ts_btn.move(maxw, self.menuBar().height())
+        self.choose_ts_btn = QPushButton('Choose timestack file', self)
+        self.choose_ts_btn.setToolTip('Choose timestack file')
+        self.choose_ts_btn.clicked.connect(self.browse_ts)
+        self.choose_ts_btn.resize(right_b_width, self.__b_height)
+        self.choose_ts_btn.move(maxw, self.menuBar().height())
 
         # choose expected bathymetry file button
-        choose_b_btn = QPushButton('Choose expected bathymetry file', self)
-        choose_b_btn.setToolTip('Choose expected bathymetry file')
-        choose_b_btn.clicked.connect(self.browse_b)
-        choose_b_btn.resize(right_b_width, self.__b_height)
-        choose_b_btn.move(maxw, self.menuBar().height() + self.__b_height)
+        self.choose_b_btn = QPushButton('Choose expected bathymetry file', self)
+        self.choose_b_btn.setToolTip('Choose expected bathymetry file')
+        self.choose_b_btn.clicked.connect(self.browse_b)
+        self.choose_b_btn.resize(right_b_width, self.__b_height)
+        self.choose_b_btn.move(maxw, self.menuBar().height() + self.__b_height)
 
         # choose weight file button
-        choose_m_btn = QPushButton('Choose model file', self)
-        choose_m_btn.setToolTip('Choose model file')
-        choose_m_btn.clicked.connect(self.browse_m)
-        choose_m_btn.resize(right_b_width, self.__b_height)
-        choose_m_btn.move(maxw, self.menuBar().height() + 2 * self.__b_height)
+        self.choose_m_btn = QPushButton('Choose model file', self)
+        self.choose_m_btn.setToolTip('Choose model file')
+        self.choose_m_btn.clicked.connect(self.browse_m)
+        self.choose_m_btn.resize(right_b_width, self.__b_height)
+        self.choose_m_btn.move(maxw, self.menuBar().height() + 2 * self.__b_height)
 
         # play/pause wawe animation from the timestack
         self.pp_pbtn = QPushButton('Start/Stop', self)
@@ -203,12 +194,18 @@ class ApplicationWindow(QMainWindow):
 			# Stop the animation
             self.pp_pbtn.setText('Start')
             self.pp_pbtn.setCheckable(False)
+            self.choose_ts_btn.setEnabled(True)
+            self.choose_b_btn.setEnabled(True)
+            self.choose_m_btn.setEnabled(True)
             self.timer.stop()
             self.b_canvas.plot(bath_path=self.bath)
         else:
 			# Start the animation
             self.pp_pbtn.setText('Stop')
             self.pp_pbtn.setCheckable(True)
+            self.choose_ts_btn.setEnabled(False)
+            self.choose_b_btn.setEnabled(False)
+            self.choose_m_btn.setEnabled(False)
             self.b_canvas.c_time = time()
             self.timer.start()
 
@@ -415,6 +412,8 @@ class BCanvas(FigureCanvasQTAgg):
         self.bath_path = bath_path
         self.bath = np.load(bath_path)  		# bathymetry vector
         self.bath_pred = np.load(bath_path)  	# bathymetry vector
+        self.bathmin = []
+        self.bathmax = []
         self.ts = np.load(ts_path)  			# timestack matrix
         self.n_time = len(self.ts)  			# size of time window
         self.n_wave = len(self.ts[0])  			# distance to the horizon
@@ -440,6 +439,10 @@ class BCanvas(FigureCanvasQTAgg):
                              min(self.bath),
                              self.bath,
                              facecolor='orange')
+        self.ax.fill_between(range(self.n_bath),
+                             self.bathmin,
+                             self.bathmax,
+                             facecolor='red')
         self.__infos()
 
         self.ax.figure.canvas.draw()
@@ -457,6 +460,8 @@ class BCanvas(FigureCanvasQTAgg):
         self.ax.clear()
         self.bath_path = bath_path
         self.bath = np.load(bath_path)
+        self.bathmin = [min(b, bp) for (b, bp) in zip(self.bath, self.bath_pred)]
+        self.bathmax = [max(b, bp) for (b, bp) in zip(self.bath, self.bath_pred)]
         self.n_time = len(self.ts)  	# size of time window
         self.n_wave = len(self.ts[0])  	# distance to the horizon
         self.n_bath = len(self.bath)  	# size of the bathymetry grid
@@ -471,6 +476,10 @@ class BCanvas(FigureCanvasQTAgg):
                              min(self.bath),
                              self.bath,
                              facecolor='orange')
+        self.ax.fill_between(range(self.n_bath),
+                             self.bathmin,
+                             self.bathmax,
+                             facecolor='red')
         self.__infos()
 
         self.draw()
