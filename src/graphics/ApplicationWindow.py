@@ -5,9 +5,9 @@ import inspect
 from src.models import cnn
 from src.networks.cnn import CNN
 from src.networks.autoencoder import AutoEncoder
-from PyQt5.QtCore import QDir
+from PyQt5.QtCore import QDir, Qt
 from PyQt5.QtWidgets import QMainWindow, QSizePolicy, QPushButton, QAction, \
-    QDesktopWidget, QFileDialog, QComboBox
+    QDesktopWidget, QFileDialog, QTextEdit
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, FigureCanvasQT
 from matplotlib.figure import Figure
 import matplotlib.animation as animation
@@ -65,7 +65,9 @@ class ApplicationWindow(QMainWindow):
         # define the window titled self.title
         self.setWindowTitle(self.title)
         self.setFixedSize(geometry.width(), geometry.height())
-        self.__menu_bar()  # Setting up the menu bar
+        
+        # menu bar
+        self.__menu_bar()
 
         # buttons
         self.__buttons()
@@ -75,18 +77,17 @@ class ApplicationWindow(QMainWindow):
                                   width=int((self.width() - self.__b_width) / 3),
                                   height=int(self.height() - self.__m_height))
         self.ts_canvas.move(0, self.__m_height)
-        self.ts = ''
+        self.ts = 'src/graphics/TS_init.npy'
 
         # bathymetry Canvas
         self.b_canvas = BCanvas(self,
                                 width=int(2 * (self.width() - self.__b_width) / 3),
                                 height=int(2 * self.height() / 3))
-        self.b_canvas.move(self.ts_canvas.get_width_height()[0],
+        self.b_canvas.move(self.ts_canvas.get_width_height()[0] + int(self.__b_shift/2),
                            self.__m_height)
         self.bath = 'src/graphics/B_init.npy'
-
-        self.weight = ''
-
+        
+                           
         self.show()
 
     def __menu_bar(self):
@@ -139,10 +140,38 @@ class ApplicationWindow(QMainWindow):
                 - Exit
 
         """
-        maxw = self.width() - self.__b_width + self.__b_shift  		# Max width
-        maxh = self.height() - self.__m_height - self.__b_height  	# Max height
-        right_b_width = self.__b_width - self.__b_shift  			# Button width
+        maxw = self.width() - self.__b_width + self.__b_shift           # Max width
+        maxh = self.height() - self.__m_height - self.__b_height        # Max height
+        right_b_width = self.__b_width - self.__b_shift                 # Button width
 
+        minw = int((self.width() - self.__b_width) / 3)
+        height = self.height() - int(2 * self.height() / 3)
+        width = int(2 * (self.width() - self.__b_width) / 3)
+        
+        # max height error
+        self.text1 = QTextEdit(self)
+        self.text1.setReadOnly(True)
+        self.text1.textCursor().insertText('max height error : 0.00 m')
+        self.text1.resize(right_b_width, self.__b_height)
+        self.text1.move(minw + int((width-3*self.__b_width)/3) + int(self.__b_shift/2),
+                        maxh - int((height-self.__b_height)/2) + self.__m_height)
+        
+        # mean height error
+        self.text2 = QTextEdit(self)
+        self.text2.setReadOnly(True)
+        self.text2.textCursor().insertText('mean height error : 0.00 m')
+        self.text2.resize(right_b_width, self.__b_height)
+        self.text2.move(minw + int((width-3*self.__b_width)*2/3) + self.__b_width + int(self.__b_shift/2),
+                        maxh - int((height-self.__b_height)/2) + self.__m_height)
+        
+        # correlation coefficient
+        self.text3 = QTextEdit(self)
+        self.text3.setReadOnly(True)
+        self.text3.textCursor().insertText('correlation coef : 1.00000')
+        self.text3.resize(right_b_width, self.__b_height)
+        self.text3.move(minw + int((width-3*self.__b_width)) + 2 * self.__b_width + int(self.__b_shift/2),
+                        maxh - int((height-self.__b_height)/2) + self.__m_height)
+        
         # choose timestack file button
         self.choose_ts_btn = QPushButton('Choose timestack file', self)
         self.choose_ts_btn.setToolTip('Choose timestack file')
@@ -237,9 +266,25 @@ class ApplicationWindow(QMainWindow):
                                                '',
                                                '(*.npy)')[0]
         if filename:
-			# Update the b_canvas
+			# update the b_canvas
             self.bath = filename
             self.b_canvas.plot(bath_path=self.bath)
+            
+            # update message box 1
+            max_height_error = max(abs(self.b_canvas.bath-self.b_canvas.bath_pred))
+            self.text1.selectAll()
+            self.text1.textCursor().clearSelection()
+            self.text1.textCursor().insertText('max height error : ' + str(round(max_height_error,2)) + ' m')
+            # update message box 2
+            mean_height_error = np.mean(abs(self.b_canvas.bath-self.b_canvas.bath_pred))
+            self.text2.selectAll()
+            self.text2.textCursor().clearSelection()
+            self.text2.textCursor().insertText('mean height error : ' + str(round(mean_height_error,2)) + ' m')
+            # update message box 3
+            corr_coef = np.corrcoef(self.b_canvas.bath, self.b_canvas.bath_pred)
+            self.text3.selectAll()
+            self.text3.textCursor().clearSelection()
+            self.text3.textCursor().insertText('correlation coef : ' + str(round(corr_coef[0,1],5)))
 
     def browse_m(self, ae=False):
         """Action of the Choose model button.
@@ -250,7 +295,7 @@ class ApplicationWindow(QMainWindow):
 		"""
 		# Get the encoder filename
         encoder_filename = QFileDialog.getOpenFileName(None, 'Find trained encoder',
-                                               'src/saves/weights/',
+                                               'saves/weights/',
                                                '(*.h5)')[0]
                                                
         # Get the encoder model name and version
@@ -260,7 +305,7 @@ class ApplicationWindow(QMainWindow):
         
         # Get the cnn model filename
         model_filename = QFileDialog.getOpenFileName(None, 'Find trained model',
-                                               'src/saves/weights/',
+                                               'saves/weights/',
                                                '(*.h5)')[0]
                                                
         # Get the cnn model name and version
@@ -280,23 +325,39 @@ class ApplicationWindow(QMainWindow):
 			
 			# Predict the encoded the timestack (= encode the timestack)
             ts_enc = ae1.predict(ts_origi.reshape(len(ts_origi), 
-												  width, 
-												  height, 
-												  1), 
-								 batch_size=1)
+                                                  width, 
+                                                  height, 
+                                                  1), 
+                                 batch_size=1)
             a ,width, height = ts_enc.shape
             ts_enc = np.array([ts_enc])
             
             # Predict the bathymetry
             self.b_canvas.bath_pred = cnn1.predict(ts_enc.reshape(len(ts_enc), 
-																  width, 
-																  height, 
-																  1), 
-												   batch_size=1, 
-												   smooth=True).flatten()
+                                                                  width, 
+                                                                  height, 
+                                                                  1), 
+                                                   batch_size=1, 
+                                                   smooth=True).flatten()
             
             # Update the display
             self.b_canvas.plot(bath_path=self.bath)
+            
+            max_height_error = max(abs(self.b_canvas.bath-self.b_canvas.bath_pred))
+            self.text1.selectAll()
+            self.text1.textCursor().clearSelection()
+            self.text1.textCursor().insertText('max height error : ' + str(round(max_height_error,2)) + ' m')
+            
+            mean_height_error = np.mean(abs(self.b_canvas.bath-self.b_canvas.bath_pred))
+            self.text2.selectAll()
+            self.text2.textCursor().clearSelection()
+            self.text2.textCursor().insertText('mean height error : ' + str(round(mean_height_error,2)) + ' m')
+            
+            corr_coef = np.corrcoef(self.b_canvas.bath, self.b_canvas.bath_pred)
+            self.text3.selectAll()
+            self.text3.textCursor().clearSelection()
+            self.text3.textCursor().insertText('correlation coef : ' + str(round(corr_coef[0,1],5)))
+
 
             
 
@@ -358,6 +419,9 @@ class TSCanvas(FigureCanvasQTAgg):
         # self.fig.colorbar(ts_fig)
         self.ax.set_title('TimeStack : ' + ts_path.split('/')[-1].split('.')[0])
         self.draw()
+
+
+
 
 
 class BCanvas(FigureCanvasQTAgg):
@@ -436,7 +500,7 @@ class BCanvas(FigureCanvasQTAgg):
                              self.bath[:self.n_wave],
                              facecolor='xkcd:azure')
         self.ax.fill_between(range(self.n_bath),
-                             min(self.bath),
+                             min(np.min(self.bath), np.min(self.bath_pred)),
                              self.bath,
                              facecolor='orange')
         self.ax.fill_between(range(self.n_bath),
@@ -473,7 +537,7 @@ class BCanvas(FigureCanvasQTAgg):
                              self.bath[:self.n_wave],
                              facecolor='xkcd:azure')
         self.ax.fill_between(range(self.n_bath),
-                             min(self.bath),
+                             min(np.min(self.bath), np.min(self.bath_pred)),
                              self.bath,
                              facecolor='orange')
         self.ax.fill_between(range(self.n_bath),
@@ -491,7 +555,7 @@ class BCanvas(FigureCanvasQTAgg):
         self.ax.set_xlabel(r'Horizon distance $(m)$')
         self.ax.set_ylabel(r'Depth $(m)$')
         self.ax.set_xlim((0, self.n_bath - 1))
-        self.ax.set_ylim((np.min(self.bath), np.max(self.ts)))
+        self.ax.set_ylim((min(np.min(self.bath), np.min(self.bath_pred)), np.max(self.ts)))
         self.ax.legend()
         self.ax.grid()
         self.ax.set_title(r'Expected and Predicted Bathymetry : ' + self.bath_path.split('/')[-1].split('.')[0])
